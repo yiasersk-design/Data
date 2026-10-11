@@ -109,7 +109,7 @@ pre.tx{white-space:pre-wrap;word-break:break-word;background:var(--bg);padding:8
 @keyframes sp{to{transform:rotate(360deg)}}
 </style>
 </head>
-<body>
+<body spellcheck="false">
 <div id="app">
   <header class="top"><h1 id="pgTitle"></h1><div id="saveChip" class="chip busy">লোড হচ্ছে…</div></header>
   <main id="view"></main>
@@ -1112,7 +1112,7 @@ function vMatch(){
   const nb = S.books.length;
   return '<div class="card">' + (nb ? '' : '<div class="warnbox">আগে লাইব্রেরিতে অন্তত একটি TXT ফাইল যুক্ত করুন।</div>') +
     '<label class="lbl">প্রশ্ন পেস্ট করুন (একটি বা একাধিক)</label>' +
-    '<textarea id="qInput" class="inp big" placeholder="প্রশ্ন: “বৃদ্ধ মানুষটি বাড়ি ফিরে এলেন” — লাইনটি কোন অধ্যায় থেকে নেওয়া হয়েছে?&#10;&#10;একাধিক প্রশ্ন আলাদা করতে ফাঁকা লাইন বা ১. ২. ৩. নম্বর ব্যবহার করুন।">' + esc(S.input) + '</textarea>' +
+    '<textarea id="qInput" class="inp big" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="প্রশ্ন: “বৃদ্ধ মানুষটি বাড়ি ফিরে এলেন” — লাইনটি কোন অধ্যায় থেকে নেওয়া হয়েছে?&#10;&#10;একাধিক প্রশ্ন আলাদা করতে ফাঁকা লাইন বা ১. ২. ৩. নম্বর ব্যবহার করুন।">' + esc(S.input) + '</textarea>' +
     '<div class="mut small" id="qCount">' + qCountText() + '</div>' +
     '<div class="toggle"><span>পুনরাবৃত্ত প্রশ্ন আলাদা এন্ট্রি হিসেবে রাখুন</span><input type="checkbox" data-act="togDup" ' + (S.allowDup ? 'checked' : '') + '></div>' +
     '<div class="toggle"><span>নির্ভরযোগ্য মিল স্বয়ংক্রিয়ভাবে সংরক্ষণ</span><input type="checkbox" data-act="togAuto" ' + (S.settings.autoSave ? 'checked' : '') + '></div>' +
