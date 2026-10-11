@@ -1,1 +1,1607 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#4f46e5">
+<title>প্রশ্ন ম্যাচার ও অধ্যায়ভিত্তিক বিশ্লেষণ</title>
+<style>
+:root{--bg:#f4f5fb;--card:#fff;--tx:#1b1d2a;--mut:#6b7086;--pri:#4f46e5;--pri2:#7c3aed;--ok:#059669;--warn:#d97706;--bad:#dc2626;--bd:#e5e7f2;--hl:#fff1a8;--sh:0 4px 18px rgba(40,40,90,.08);--r:6px;--soft:#eef0ff}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1220;--card:#181c30;--tx:#eceefb;--mut:#9aa0bd;--bd:#2a2f4a;--hl:#6b5a10;--sh:0 4px 18px rgba(0,0,0,.4);--soft:#222850}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{font-family:'Noto Sans Bengali','Hind Siliguri','Kalpurush','SolaimanLipi',system-ui,-apple-system,Roboto,sans-serif;background:var(--bg);color:var(--tx);line-height:1.55;font-size:14px}
+#app{display:flex;flex-direction:column;height:100%;max-width:860px;margin:0 auto;position:relative}
+.top{padding:calc(env(safe-area-inset-top) + 8px) 14px 8px;background:linear-gradient(135deg,var(--pri),var(--pri2));color:#fff;display:flex;align-items:center;justify-content:space-between;gap:8px;border-radius:0 0 8px 8px;box-shadow:var(--sh);z-index:5}
+.top h1{margin:0;font-size:16.5px;font-weight:700;line-height:1.35}
+.chip{font-size:11.5px;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.2);white-space:nowrap}
+.chip.ok{background:rgba(16,185,129,.28)}
+.chip.busy{background:rgba(251,191,36,.35)}
+.chip.bad{background:rgba(239,68,68,.45)}
+main{flex:1;overflow-y:auto;padding:10px 10px 76px;-webkit-overflow-scrolling:touch}
+.tabs{position:absolute;left:0;right:0;bottom:0;display:flex;background:var(--card);border-top:1px solid var(--bd);padding:4px 2px calc(env(safe-area-inset-bottom) + 4px);box-shadow:0 -4px 18px rgba(40,40,90,.08);z-index:6}
+.tabs button{flex:1;border:0;background:none;color:var(--mut);font:inherit;font-size:11px;padding:3px 2px;display:flex;flex-direction:column;align-items:center;gap:2px;position:relative;transition:transform .2s cubic-bezier(.34,1.56,.64,1),color .2s}
+.tabs button .ic{display:flex;align-items:center;justify-content:center;height:20px}
+.tabs button.on{color:var(--pri);font-weight:700;transform:translateY(-2px)}
+.tabs .bdg{position:absolute;top:0;right:18%;background:var(--bad);color:#fff;border-radius:999px;font-size:10px;min-width:16px;height:16px;line-height:16px;text-align:center;padding:0 4px}
+.sic{display:inline-block;vertical-align:middle;flex-shrink:0}
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:10px 12px;margin-bottom:8px;border:1px solid var(--bd)}
+.hero{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.mut{color:var(--mut)}.small{font-size:12px}
+.btn{border:1px solid var(--bd);background:var(--card);color:var(--tx);font:inherit;font-size:13px;padding:6px 12px;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:transform .2s cubic-bezier(.34,1.56,.64,1),background .2s}
+.btn:active{transform:scale(.95)}
+.btn.pri{background:linear-gradient(135deg,var(--pri),var(--pri2));color:#fff;border-color:transparent}
+.btn.dng{color:var(--bad);border-color:var(--bad)}
+.btn.sm{font-size:12px;padding:4px 8px;border-radius:4px;gap:4px}
+.btn[disabled]{opacity:.5;pointer-events:none}
+.btnrow{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.lbl{display:block;font-weight:600;font-size:13px;margin:6px 0 3px}
+.inp{width:100%;font:inherit;font-size:14px;padding:7px 10px;border-radius:6px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);outline:none}
+.inp:focus{border-color:var(--pri);box-shadow:0 0 0 3px rgba(79,70,229,.15)}
+textarea.inp{resize:vertical;line-height:1.55}
+textarea.big{min-height:150px}
+.warnbox{background:#fff7e0;color:#8a5a00;border-radius:6px;padding:8px 10px;margin-bottom:6px;font-size:13px}
+@media(prefers-color-scheme:dark){.warnbox{background:#3a2e0c;color:#f6d98a}}
+.book{display:flex;flex-direction:column;gap:4px;padding:6px 10px;background:var(--card);border:1px solid var(--bd);border-radius:8px;margin-bottom:6px;transition:box-shadow .2s}
+.book-header{display:flex;align-items:center;gap:8px}
+.file-badge{width:34px;height:34px;min-width:34px;border-radius:6px;background:var(--bg);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:10px;color:var(--mut);letter-spacing:0.5px}
+.book-info{flex:1;min-width:0}
+.book .bname{font-size:13.5px;font-weight:600;color:var(--tx);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.book-meta{font-size:11.5px;color:var(--mut);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btn-icon-del{background:none;border:none;color:var(--mut);cursor:pointer;padding:4px;border-radius:6px;display:flex;align-items:center;justify-content:center;transition:color .2s,background .2s}
+.btn-icon-del:hover{color:var(--bad);background:rgba(220,38,38,.08)}
+.book-tools{display:flex;gap:5px;border-top:1px dashed var(--bd);padding-top:5px;margin-top:0}
 
+.badge{display:inline-block;font-size:12px;padding:1px 10px;border-radius:999px;background:var(--soft);color:var(--pri);font-weight:600}
+.badge.saved{background:#d1fae5;color:#047857}.badge.review{background:#fef3c7;color:#b45309}.badge.ambiguous{background:#ffedd5;color:#c2410c}.badge.unmatched{background:#fee2e2;color:#b91c1c}.badge.duplicate{background:#e0e7ff;color:#4338ca}
+.badge.imp{background:rgba(220,38,38,.12);color:#dc2626;border:1px solid rgba(220,38,38,.3);font-weight:700}
+.badge.med{background:rgba(217,119,6,.12);color:#d97706;border:1px solid rgba(217,119,6,.3);font-weight:700}
+.badge.low{background:rgba(107,112,134,.12);color:var(--mut);border:1px solid rgba(107,112,134,.25);font-weight:600}
+
+
+.filters{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:6px}
+.fch{border:1px solid var(--bd);background:var(--card);color:var(--tx);font:inherit;font-size:12px;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.fch.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.qhead{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:4px}
+.qno{font-weight:700;color:var(--pri)}
+.qtxt{white-space:pre-wrap;word-break:break-word}
+.qchips{margin:4px 0;display:flex;gap:6px;flex-wrap:wrap}
+.qchip{font-size:12px;background:var(--soft);border-radius:6px;padding:1px 6px;word-break:break-word}
+.cand{border:1px solid var(--bd);border-radius:6px;padding:8px 10px;margin-top:6px;background:var(--bg)}
+.cand.sel{border-color:var(--ok);background:rgba(16,185,129,.08)}
+.chead{font-weight:600;font-size:13.5px}.sep{margin:0 5px;color:var(--mut)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0}
+.tp,.sc,.cx{font-size:11.5px;padding:0 8px;border-radius:999px;border:1px solid var(--bd)}
+.tp.exact{background:#d1fae5;color:#047857;border-color:transparent}.tp.normalized{background:#dbeafe;color:#1d4ed8;border-color:transparent}.tp.partial{background:#fef3c7;color:#b45309;border-color:transparent}.tp.fuzzy{background:#fce7f3;color:#be185d;border-color:transparent}
+.ctxt{margin:4px 0;word-break:break-word}.dim{color:var(--mut)}
+mark{background:var(--hl);color:inherit;border-radius:3px;padding:0 3px}
+.selb{color:var(--ok);font-weight:600;font-size:12.5px}
+.bar{height:4px;background:var(--bd);border-radius:4px;overflow:hidden;margin:3px 0 5px}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--pri),var(--pri2))}
+details{margin-top:6px}summary{cursor:pointer;color:var(--pri);font-size:13px}
+.rs{display:flex;gap:6px;margin-top:6px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.fld{margin:4px 0;word-break:break-word}.fld b{color:var(--mut);font-weight:600;font-size:12px;display:block}
+.ent{border-left:3px solid var(--pri)}
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px dashed var(--bd)}
+.toggle:last-child{border-bottom:0}
+.toggle select{font:inherit;padding:5px 8px;border-radius:6px;border:1px solid var(--bd);background:var(--bg);color:var(--tx)}
+.toggle input[type=checkbox]{width:20px;height:20px;accent-color:var(--pri)}
+.empty{text-align:center;padding:22px 10px;color:var(--mut);display:flex;flex-direction:column;align-items:center;gap:6px}
+.mback{position:fixed;inset:0;background:rgba(10,12,30,.55);display:flex;align-items:flex-end;justify-content:center;z-index:50;animation:fi .2s}
+.modal{background:var(--card);width:100%;max-width:640px;max-height:90%;border-radius:8px 8px 0 0;display:flex;flex-direction:column;animation:su .35s cubic-bezier(.34,1.3,.64,1)}
+.modal.wide{max-width:820px}
+.mhead{display:flex;justify-content:space-between;align-items:center;padding:12px 14px 6px}
+.x{border:0;background:var(--soft);color:var(--tx);width:30px;height:30px;border-radius:50%;font-size:14px;cursor:pointer}
+.mbody{padding:4px 14px 10px;overflow-y:auto;word-break:break-word}
+.mfoot{display:flex;gap:6px;justify-content:flex-end;padding:8px 14px calc(env(safe-area-inset-bottom) + 12px);flex-wrap:wrap}
+.chrow{display:flex;gap:6px;align-items:center;margin:5px 0}.chrow .inp{flex:1}
+.radio{display:block;margin:4px 0}
+.err{color:var(--bad);font-size:12.5px;min-height:18px}
+#toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%);z-index:80;display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none;width:90%}
+.tst{background:#1f2237;color:#fff;padding:8px 14px;border-radius:8px;font-size:13px;box-shadow:var(--sh);animation:su .3s cubic-bezier(.34,1.56,.64,1);max-width:100%}
+.tst.bad{background:var(--bad)}.tst.ok{background:var(--ok)}
+.busy{position:fixed;inset:0;background:rgba(10,12,30,.6);display:none;align-items:center;justify-content:center;flex-direction:column;gap:10px;z-index:90;color:#fff}
+.busy.on{display:flex}
+.spin{width:40px;height:40px;border-radius:50%;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;animation:sp 1s linear infinite}
+pre.tx{white-space:pre-wrap;word-break:break-word;background:var(--bg);padding:8px;border-radius:6px;max-height:50vh;overflow:auto;font-family:inherit;font-size:13px}
+@keyframes fi{from{opacity:0}to{opacity:1}}
+@keyframes su{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="top"><h1 id="pgTitle"></h1><div id="saveChip" class="chip busy">লোড হচ্ছে…</div></header>
+  <main id="view"></main>
+  <nav class="tabs" id="tabs">
+    <button data-v="lib"><span class="ic"><svg class="sic" width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M10.8 0c.274 0 .537.113.726.312l3.2 3.428c.176.186.274.433.274.689V15a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V1a1 1 0 0 1 1-1zM14 5h-3.5a.5.5 0 0 1-.5-.5V1H2v14h12zm-8.5 7a.5.5 0 1 1 0-1h5a.5.5 0 1 1 0 1zm0-3a.5.5 0 0 1 0-1h5a.5.5 0 1 1 0 1z"/></svg></span>লাইব্রেরি</button>
+    <button data-v="match"><span class="ic"><svg class="sic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>ম্যাচার</button>
+    <button data-v="results"><span class="ic"><svg class="sic" width="18" height="18" viewBox="0 0 512 512" fill="currentColor"><path d="M415.313 358.7c36.453-36.452 55.906-85.231 54.779-137.353c-1.112-51.375-21.964-99.908-58.715-136.66l-22.627 22.627a166.82 166.82 0 0 1 49.35 114.725c.937 43.313-15.191 83.81-45.463 114.083l-48.617 49.051l.044-89.165l-32-.016L311.992 440h144.071v-32h-89.614ZM47.937 112h89.614l-48.864 49.3c-36.453 36.451-55.906 85.231-54.779 137.352a198.68 198.68 0 0 0 58.715 136.66l22.627-22.627A166.82 166.82 0 0 1 65.9 297.962c-.937-43.314 15.191-83.811 45.463-114.083l48.617-49.051l-.044 89.165l32 .015L192.008 80H47.937Z"/></svg></span>রেজাল্ট<span class="bdg" id="bdgR" style="display:none"></span></button>
+
+    <button data-v="analysis"><span class="ic"><svg class="sic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>অ্যানালাইসিস</button>
+    <button data-v="settings"><span class="ic"><svg class="sic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>সেটিংস</button>
+  </nav>
+</div>
+<div id="modalRoot"></div>
+<div id="toast"></div>
+<div class="busy" id="busy"><div class="spin"></div><div id="busyMsg"></div></div>
+<input type="file" id="fileTxt" accept=".txt,text/plain" multiple hidden>
+<input type="file" id="fileBackup" accept=".json,application/json" hidden>
+
+<script id="engine">
+/* ================= ENGINE : বাংলা টেক্সট ম্যাচিং ================= */
+const ENGINE_V = 1;
+const PUNCT_RE = /[।॥!?,.;:"'“”‘’«»()\[\]{}<>\-–—…_*#\/\\|~`^=+@$%&]/g;
+const STOPQ = new Set(['প্রশ্ন','কোন','কোনো','কোথা','কোথায়','কোথাকার','কী','কি','কে','কার','কাকে','কেন','অধ্যায়','অধ্যায়ের','থেকে','নেওয়া','নেয়া','হয়েছে','লাইনটি','লাইন','বাক্যটি','বাক্য','উৎস','উক্তিটি','উক্তি','অংশটি','অংশ','এই','এটি','ওই','সেই','এবং','হলো','হল','করে','করা','পাঠ','লেখো','লেখ','বলো','উল্লেখ','কর','দাও','মধ্যে','কোনটি','কোনটা','প্রসঙ্গ','প্রসঙ্গে','উদ্ধৃত']);
+
+function norm(s){
+  s = String(s == null ? '' : s).normalize('NFC');
+  s = s.replace(/[\u200b-\u200d\u2060\ufeff]/g, '');
+  s = s.replace(/\u09DC/g, '\u09A1\u09BC').replace(/\u09DD/g, '\u09A2\u09BC').replace(/\u09DF/g, '\u09AF\u09BC');
+  s = s.replace(PUNCT_RE, ' ');
+  return s.replace(/\s+/g, ' ').trim().toLowerCase();
+}
+function bn(n){ return String(n).replace(/\d/g, function(d){ return '০১২৩৪৫৬৭৮৯'[+d]; }); }
+function hasBn(s){ return /[\u0980-\u09FF]/.test(s); }
+
+function splitSentences(text){
+  const lines = String(text).replace(/\r\n?/g, '\n').split('\n');
+  const out = [];
+  let blank = true;
+  const re = /[^।?!]+(?:[।?!]+["'”’)\]»]*)?|[।?!]+["'”’)\]»]*/g;
+  for(let li = 0; li < lines.length; li++){
+    const line = lines[li].trim();
+    if(!line){ blank = true; if(out.length) out[out.length-1].na = true; continue; }
+    const parts = line.match(re) || [line];
+    let first = true;
+    for(const p of parts){
+      const t = p.trim();
+      if(!t) continue;
+      if(!first && !norm(t) && out.length){ out[out.length-1].t += ' ' + t; continue; }
+      out.push({t: t, pb: first ? blank : false, na: false});
+      first = false;
+    }
+    blank = false;
+    const nxt = lines[li+1];
+    if(nxt === undefined || !nxt.trim()){ if(out.length) out[out.length-1].na = true; }
+  }
+  return out;
+}
+
+const HEAD_P1 = /^\s*(?:#{1,6}\s*|={2,}\s*|\*{2,}\s*|\[+\s*)?(?:অধ্যায়|পাঠ|পরিচ্ছেদ|অনুচ্ছেদ|পর্ব|সর্গ|অঙ্ক|ইউনিট|একক|খণ্ড|খন্ড|chapter|unit|lesson|part)\s*[-–—:ঃ.]?\s*[০-৯0-9IVXivx]*\s*(?:[-–—:ঃ.].*)?$/i;
+const HEAD_P2 = /^\s*(?:#{1,6}\s+|={2,}|\*{2,}\s*\S|\[\[|\u3010).+/;
+function cleanTitle(t){
+  const c = t.replace(/^[\s#=*\[\u3010]+/, '').replace(/[\s=*\]\u3011]+$/, '').trim();
+  return c || t.trim();
+}
+function isHeading(s, mode, re){
+  const t = s.t;
+  if(re && t.length <= 140 && re.test(t)) return true;
+  if(mode === 'blank'){
+    const n = norm(t);
+    return t.length <= 50 && s.pb && s.na && !/[।?!,;]$/.test(t) && n.length > 0 && n.split(' ').length <= 8;
+  }
+  if(t.length > 90) return false;
+  if(/[।?!]$/.test(t.replace(/[\]=*\u3011\s]+$/, ''))) return false;
+  return HEAD_P1.test(t) || HEAD_P2.test(t);
+}
+function detectChapters(sents, bookName, mode, customRe){
+  let re = null;
+  if(customRe){ try{ re = new RegExp(customRe); }catch(e){ re = null; } }
+  const ch = [];
+  for(let i = 0; i < sents.length; i++){
+    if(isHeading(sents[i], mode, re)) ch.push({title: cleanTitle(sents[i].t), start: i, h: true});
+  }
+  if(!ch.length || ch[0].start > 0) ch.unshift({title: bookName, start: 0, h: false});
+  return ch;
+}
+
+function sentAt(starts, idxs, pos){
+  let lo = 0, hi = starts.length - 1, ans = 0;
+  while(lo <= hi){
+    const mid = (lo + hi) >> 1;
+    if(starts[mid] <= pos){ ans = mid; lo = mid + 1; } else hi = mid - 1;
+  }
+  return idxs[ans];
+}
+
+function prepare(book){
+  const sents = splitSentences(book.text);
+  for(const s of sents){ s.c = s.t.replace(/\s+/g, ' ').normalize('NFC'); s.n = norm(s.t); s.h = false; s.ch = 0; }
+  let chapters = (book.chapters && book.chapters.length && book.cv === ENGINE_V) ? book.chapters : null;
+  if(!chapters || chapters.some(function(c){ return c.start >= sents.length; })){
+    chapters = detectChapters(sents, book.name, book.chapMode || 'pattern', book.chapRegex || '');
+  }
+  for(let k = 0; k < chapters.length; k++){
+    const c = chapters[k];
+    const end = k + 1 < chapters.length ? chapters[k+1].start : sents.length;
+    if(sents[c.start]) sents[c.start].h = !!c.h;
+    for(let i = c.start; i < end; i++) sents[i].ch = k;
+  }
+  let of = '', nf = '';
+  const oS = [], oI = [], nS = [], nI = [];
+  const wi = new Map();
+  for(let i = 0; i < sents.length; i++){
+    const s = sents[i];
+    if(s.c){ if(of) of += ' '; oS.push(of.length); oI.push(i); s.o = of.length; of += s.c; }
+    if(s.n){
+      if(nf) nf += ' ';
+      nS.push(nf.length); nI.push(i); s.no = nf.length; nf += s.n;
+      s.w = s.n.split(' ');
+      const seen = new Set();
+      for(const w of s.w){
+        if(seen.has(w)) continue;
+        seen.add(w);
+        let a = wi.get(w);
+        if(!a){ a = []; wi.set(w, a); }
+        a.push(i);
+      }
+    } else { s.w = []; }
+  }
+  return {sents: sents, chapters: chapters, of: of, nf: nf, oS: oS, oI: oI, nS: nS, nI: nI, wi: wi, tri: null};
+}
+
+function triIndex(prep){
+  if(prep.tri) return prep.tri;
+  const m = new Map();
+  for(let i = 0; i < prep.sents.length; i++){
+    const s = prep.sents[i];
+    const x = s.n.replace(/ /g, '');
+    s.x = x;
+    for(let k = 0; k + 2 < x.length; k++){
+      const key = (x.charCodeAt(k) * 65536 + x.charCodeAt(k+1)) * 65536 + x.charCodeAt(k+2);
+      let a = m.get(key);
+      if(!a){ a = []; m.set(key, a); }
+      if(a[a.length-1] !== i) a.push(i);
+    }
+  }
+  prep.tri = m;
+  return m;
+}
+
+function longestRun(a, b){
+  let best = 0;
+  let prev = new Array(b.length + 1).fill(0);
+  for(let i = 1; i <= a.length; i++){
+    const cur = new Array(b.length + 1).fill(0);
+    for(let j = 1; j <= b.length; j++){
+      if(a[i-1] === b[j-1]){ cur[j] = prev[j-1] + 1; if(cur[j] > best) best = cur[j]; }
+    }
+    prev = cur;
+  }
+  return best;
+}
+
+function approxSim(q, s){
+  const m = q.length, n = s.length;
+  if(!m || !n) return 0;
+  let prev = new Uint16Array(n + 1);
+  let cur = new Uint16Array(n + 1);
+  for(let i = 1; i <= m; i++){
+    cur[0] = i;
+    const qc = q.charCodeAt(i-1);
+    for(let j = 1; j <= n; j++){
+      const cost = qc === s.charCodeAt(j-1) ? 0 : 1;
+      let v = prev[j-1] + cost;
+      const del = prev[j] + 1;
+      const ins = cur[j-1] + 1;
+      if(del < v) v = del;
+      if(ins < v) v = ins;
+      cur[j] = v;
+    }
+    const t = prev; prev = cur; cur = t;
+  }
+  let min = m;
+  for(let j = 0; j <= n; j++){ if(prev[j] < min) min = prev[j]; }
+  return Math.max(0, 1 - min / m);
+}
+
+const WRAP_ONLY = /^[\s"'“”‘’«»()\[\]।!?.,;:\-–—…]*$/;
+function searchBook(prep, q, opts){
+  opts = opts || {};
+  const sents = prep.sents;
+  const N = sents.length;
+  const best = new Map();
+  const add = function(si, ei, type, score){
+    const k = si + ':' + ei;
+    const o = best.get(k);
+    if(!o || o.score < score) best.set(k, {si: si, ei: ei, type: type, score: score});
+  };
+  const qc = String(q).normalize('NFC').replace(/\s+/g, ' ').trim();
+  const qn = norm(q);
+  if(qn.length < 2) return [];
+  const pen = qn.length < 6 ? 25 : (qn.length < 12 ? 15 : 0);
+  let top = 0;
+
+  const qs = qc.replace(/^[\s"'“”‘’«».,;:!?।\-–—…]+|[\s"'“”‘’«».,;:!?।\-–—…]+$/g, '');
+  if(qs.length >= 2 && prep.of){
+    let from = 0, cnt = 0;
+    while(cnt < 300){
+      const p = prep.of.indexOf(qs, from);
+      if(p < 0) break;
+      cnt++; from = p + 1;
+      const si = sentAt(prep.oS, prep.oI, p);
+      const ei = sentAt(prep.oS, prep.oI, p + qs.length - 1);
+      const before = prep.of.slice(sents[si].o, p);
+      const after = prep.of.slice(p + qs.length, sents[ei].o + sents[ei].c.length);
+      const whole = WRAP_ONLY.test(before) && WRAP_ONLY.test(after);
+      const sc = whole ? 100 : Math.max(60, 97 - pen);
+      add(si, ei, 'exact', sc);
+      if(sc > top) top = sc;
+    }
+  }
+  if(prep.nf){
+    let from = 0, cnt = 0;
+    while(cnt < 300){
+      const p = prep.nf.indexOf(qn, from);
+      if(p < 0) break;
+      cnt++; from = p + 1;
+      const si = sentAt(prep.nS, prep.nI, p);
+      const ei = sentAt(prep.nS, prep.nI, p + qn.length - 1);
+      const whole = p === sents[si].no && (p + qn.length) === (sents[ei].no + sents[ei].n.length);
+      const sc = whole ? 96 : Math.max(60, 92 - pen);
+      add(si, ei, 'normalized', sc);
+      if(sc > top) top = sc;
+    }
+  }
+
+  if(top < 90){
+    const qw = qn.split(' ').filter(Boolean);
+    const qu = Array.from(new Set(qw));
+    const cnt = new Map();
+    for(const w of qu){
+      const a = prep.wi.get(w);
+      if(!a) continue;
+      if(a.length > N * 0.25 && qu.length > 3) continue;
+      for(const i of a) cnt.set(i, (cnt.get(i) || 0) + 1);
+    }
+    const need = qu.length <= 2 ? qu.length : Math.max(2, Math.ceil(qu.length * 0.4));
+    const cands = Array.from(cnt.entries()).filter(function(e){ return e[1] >= need; }).sort(function(a, b){ return b[1] - a[1]; }).slice(0, 80);
+    for(const e of cands){
+      const i = e[0], c = e[1];
+      const run = longestRun(qw, sents[i].w);
+      if(run < 2 && !(qw.length <= 2 && c === qu.length)) continue;
+      const runFrac = run / qw.length;
+      const contain = c / qu.length;
+      let sc = Math.round(100 * (0.6 * runFrac + 0.4 * contain) * 0.95);
+      if(sc > 89) sc = 89;
+      if(sc >= 50){ add(i, i, 'partial', sc); if(sc > top) top = sc; }
+    }
+  }
+
+  if(top < 80 && opts.fuzzy !== false){
+    const x = qn.replace(/ /g, '');
+    if(x.length >= 6){
+      const tri = triIndex(prep);
+      const keys = new Set();
+      for(let k = 0; k + 2 < x.length; k++) keys.add((x.charCodeAt(k) * 65536 + x.charCodeAt(k+1)) * 65536 + x.charCodeAt(k+2));
+      const cnt = new Map();
+      keys.forEach(function(key){
+        const a = tri.get(key);
+        if(!a || a.length > N * 0.2) return;
+        for(const i of a) cnt.set(i, (cnt.get(i) || 0) + 1);
+      });
+      const total = keys.size;
+      const arr = Array.from(cnt.entries()).map(function(e){ return [e[0], e[1] / total]; }).filter(function(e){ return e[1] >= 0.25; }).sort(function(a, b){ return b[1] - a[1]; }).slice(0, 40);
+      for(const e of arr){
+        const i = e[0];
+        let sim = approxSim(x, sents[i].x);
+        if(i + 1 < N && x.length > sents[i].x.length * 0.9){
+          const s2 = approxSim(x, sents[i].x + sents[i+1].x);
+          if(s2 > sim) sim = s2;
+        }
+        if(sim >= 0.72){
+          let sc = Math.round(50 + (sim - 0.7) / 0.3 * 35);
+          if(sc > 85) sc = 85;
+          add(i, i, 'fuzzy', sc);
+        }
+      }
+    }
+  }
+  return Array.from(best.values());
+}
+
+const QRE_SRC = '"([^"]{2,}?)"|\\u201c([^\\u201d]{2,}?)\\u201d|\\u2018([^\\u2019]{2,}?)\\u2019|\'([^\']{2,}?)\'|\\u00ab([^\\u00bb]{2,}?)\\u00bb';
+const JUNK_Q = /(কোন|কোনো)\s*(অধ্যায়|পাঠ|গল্প|কবিতা|নাটক|প্রবন্ধ|উপন্যাস|অংশ)|থেকে\s*নেওয়া|নেওয়া\s*হয়েছে|লাইনটি|বাক্যটি|উক্তিটি/;
+
+function fallbackQueries(raw){
+  let s = raw.replace(/^\s*(?:প্রশ্ন|প্র|Q|Question)?\s*[\d০-৯]*\s*[.:ঃ)\-।]*\s*/i, '');
+  s = s.replace(/["\u201c\u201d\u2018\u2019'\u00ab\u00bb]/g, '');
+  const segs = s.split(/[—–:ঃ?।]|\s-\s/).map(function(x){ return x.trim(); }).filter(Boolean);
+  const scored = segs.map(function(x){
+    const ws = x.split(/\s+/).filter(function(w){ return hasBn(w); });
+    const real = ws.filter(function(w){ return !STOPQ.has(norm(w)); });
+    return {x: x, n: ws.length, r: real.length};
+  }).filter(function(o){ return o.r >= 2 && o.r / o.n >= 0.5; }).sort(function(a, b){ return b.r - a.r; });
+  const out = [];
+  for(const o of scored){ if(out.length < 2) out.push(o.x); }
+  if(!out.length && norm(s).length >= 4) out.push(s.trim());
+  return out;
+}
+
+function extractQueries(raw){
+  let s = String(raw).trim();
+  const qc = /["\u201c\u201d\u2018\u2019\u00ab\u00bb]/g;
+  if(/^["\u201c\u00ab]/.test(s) && /["\u201d\u00bb]$/.test(s)){
+    const inner = s.slice(1, -1);
+    if((inner.match(qc) || []).length >= 2) s = inner.trim();
+  }
+  const re = new RegExp(QRE_SRC, 'g');
+  const found = [];
+  let m;
+  while((m = re.exec(s))){
+    const t = (m[1] || m[2] || m[3] || m[4] || m[5] || '').trim();
+    if(t) found.push(t);
+  }
+  const seen = new Set();
+  const good = [];
+  for(const t of found){
+    if(!hasBn(t)) continue;
+    if(/[:ঃ]\s*$/.test(t)) continue;
+    if(/^(প্রশ্ন|প্র)\s*[\d০-৯]*\s*[:ঃ.]?$/.test(t)) continue;
+    if(JUNK_Q.test(t)) continue;
+    const k = norm(t);
+    if(k.length < 2 || seen.has(k)) continue;
+    seen.add(k);
+    good.push(t);
+  }
+  const rest = s.replace(new RegExp(QRE_SRC, 'g'), ' ');
+  if(good.length) return {queries: good, fallback: false, rest: rest};
+  return {queries: fallbackQueries(s), fallback: true, rest: s};
+}
+
+function splitQuestions(text){
+  const t = String(text || '').replace(/\r\n?/g, '\n').trim();
+  if(!t) return [];
+  const NUM = /^\s*(?:(?:প্রশ্ন|প্র|Q|Question)\s*)?[\d০-৯]+\s*[.)।:\-ঃ]\s*\S|^\s*(?:প্রশ্ন|Q)\s*[\d০-৯]*\s*[:ঃ]/i;
+  const blocks = t.split(/\n\s*\n+/);
+  const out = [];
+  for(const b of blocks){
+    const lines = b.split('\n').map(function(x){ return x.trimEnd(); }).filter(function(x){ return x.trim(); });
+    if(lines.length <= 1){ if(lines[0]) out.push(lines[0].trim()); continue; }
+    const numbered = lines.filter(function(l){ return NUM.test(l); }).length;
+    if(numbered >= 2 || (numbered >= 1 && NUM.test(lines[0]))){
+      let cur = null;
+      for(const l of lines){
+        if(NUM.test(l)){ if(cur !== null) out.push(cur.trim()); cur = l; }
+        else cur = (cur === null ? '' : cur + ' ') + l.trim();
+      }
+      if(cur !== null) out.push(cur.trim());
+    } else {
+      const withQ = lines.filter(function(l){ return /["\u201c\u201d\u2018\u2019\u00ab\u00bb']/.test(l); }).length;
+      if(withQ === lines.length) lines.forEach(function(l){ out.push(l.trim()); });
+      else out.push(lines.join(' ').trim());
+    }
+  }
+  return out.filter(function(x){ return x.length >= 2; });
+}
+
+function ctxWordsOf(rest){
+  const ws = norm(rest).split(' ').filter(function(w){ return w.length > 2 && hasBn(w) && !STOPQ.has(w); });
+  return Array.from(new Set(ws));
+}
+
+function matchQuestion(raw, items, opt, customQueries){
+  const ex = customQueries && customQueries.length ? {queries: customQueries, fallback: false, rest: raw} : extractQueries(raw);
+  const ctxN = opt.ctxN || 2;
+  const merged = new Map();
+  for(const it of items){
+    for(const q of ex.queries){
+      const res = searchBook(it.prep, q, {fuzzy: opt.fuzzy !== false});
+      for(const r of res){
+        const key = it.book.id + '|' + r.si + '|' + r.ei;
+        const o = merged.get(key);
+        if(!o || o.score < r.score) merged.set(key, {it: it, q: q, si: r.si, ei: r.ei, type: r.type, score: r.score});
+      }
+    }
+  }
+  const cw = ctxWordsOf(ex.rest);
+  const arr = Array.from(merged.values()).filter(function(m){ return m.score >= 50; });
+  for(const m of arr){
+    if(!cw.length){ m.ctx = null; continue; }
+    const p = m.it.prep;
+    const lo = Math.max(0, m.si - 3), hi = Math.min(p.sents.length - 1, m.ei + 3);
+    let win = norm(m.it.book.name) + ' ' + norm(p.chapters[p.sents[m.si].ch].title);
+    for(let i = lo; i <= hi; i++) win += ' ' + p.sents[i].n;
+    let hits = 0;
+    for(const w of cw){ if(win.indexOf(w) >= 0) hits++; }
+    m.ctx = Math.round(100 * hits / cw.length);
+  }
+  const rank = function(m){ return m.score + (m.ctx || 0) * 0.03; };
+  arr.sort(function(a, b){ return (rank(b) - rank(a)) || (a.it.book.name < b.it.book.name ? -1 : a.it.book.name > b.it.book.name ? 1 : 0) || (a.si - b.si); });
+  const LIM = 12;
+  const cands = arr.slice(0, LIM).map(function(m){
+    const p = m.it.prep, ss = p.sents;
+    const chapIdx = ss[m.si].ch;
+    const matched = [];
+    for(let i = m.si; i <= m.ei; i++) matched.push(ss[i].t);
+    const before = [], after = [];
+    for(let i = Math.max(0, m.si - ctxN); i < m.si; i++) before.push(ss[i].t);
+    for(let i = m.ei + 1; i <= Math.min(ss.length - 1, m.ei + ctxN); i++) after.push(ss[i].t);
+    return {bid: m.it.book.id, bname: m.it.book.name, si: m.si, ei: m.ei, type: m.type, score: m.score, q: m.q, chapIdx: chapIdx, chap: p.chapters[chapIdx].title, matched: matched.join(' '), before: before, after: after, ctx: m.ctx};
+  });
+  return {queries: ex.queries, fallback: ex.fallback, cands: cands, more: Math.max(0, arr.length - LIM)};
+}
+
+function fileKey(c, split){ return split ? (c.bid + '#' + c.chapIdx) : c.bid; }
+
+function decide(cands, opt){
+  if(!cands.length) return {status: 'unmatched'};
+  if(cands[0].score < opt.reviewThr) return {status: 'unmatched'};
+  const strong = cands.filter(function(c){ return c.score >= opt.autoThr; });
+  if(strong.length){
+    const rivalThr = Math.min(opt.autoThr, 85);
+    const files = new Set(cands.filter(function(c){ return c.score >= rivalThr; }).map(function(c){ return fileKey(c, opt.splitCh); }));
+    if(files.size === 1) return opt.autoSave ? {status: 'saved', pick: cands.indexOf(strong[0])} : {status: 'review'};
+    return {status: 'ambiguous'};
+  }
+  return {status: 'review'};
+}
+</script>
+
+<script id="ui">
+/* ================= UI / সংরক্ষণ ================= */
+const $ = function(s){ return document.querySelector(s); };
+function svgIcon(name, size){
+  size = size || 14;
+  if(name === 'lib'){
+    return '<svg class="sic" width="' + size + '" height="' + size + '" viewBox="0 0 16 16" fill="currentColor"><path d="M10.8 0c.274 0 .537.113.726.312l3.2 3.428c.176.186.274.433.274.689V15a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V1a1 1 0 0 1 1-1zM14 5h-3.5a.5.5 0 0 1-.5-.5V1H2v14h12zm-8.5 7a.5.5 0 1 1 0-1h5a.5.5 0 1 1 0 1zm0-3a.5.5 0 0 1 0-1h5a.5.5 0 1 1 0 1z"/></svg>';
+  }
+    if(name === 'results'){
+    return '<svg class="sic" width="' + size + '" height="' + size + '" viewBox="0 0 512 512" fill="currentColor"><path d="M415.313 358.7c36.453-36.452 55.906-85.231 54.779-137.353c-1.112-51.375-21.964-99.908-58.715-136.66l-22.627 22.627a166.82 166.82 0 0 1 49.35 114.725c.937 43.313-15.191 83.81-45.463 114.083l-48.617 49.051l.044-89.165l-32-.016L311.992 440h144.071v-32h-89.614ZM47.937 112h89.614l-48.864 49.3c-36.453 36.451-55.906 85.231-54.779 137.352a198.68 198.68 0 0 0 58.715 136.66l22.627-22.627A166.82 166.82 0 0 1 65.9 297.962c-.937-43.314 15.191-83.811 45.463-114.083l48.617-49.051l-.044 89.165l32 .015L192.008 80H47.937Z"/></svg>';
+  }
+
+  const p = {
+    match: '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+    analysis: '<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>',
+    plus: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+    edit: '<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>',
+    chap: '<line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>',
+    text: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>',
+    trash: '<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+    dl: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',
+    ul: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>'
+  };
+  return '<svg class="sic" width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + (p[name] || '') + '</svg>';
+}
+
+const esc = function(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
+const tick = function(){ return new Promise(function(r){ setTimeout(r, 0); }); };
+const uid = function(){ return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); };
+const DEFAULTS = {autoSave: true, autoThr: 90, reviewThr: 55, ctxN: 2, splitCh: true, fuzzy: true};
+const S = {books: [], analyses: [], qs: [], settings: Object.assign({}, DEFAULTS), seq: 0, batch: 0,
+  view: 'lib', openA: null, rf: 'batch', rLimit: 60, allowDup: false, input: '', prepCache: new Map(),
+  aq: '', af: 'all', as: 'seq', ac: 'all', aLimit: 80, dirtyA: new Set(), delA: new Set(), dbOk: false, persisted: null,
+  useStar: false};
+
+
+const TYPE_LABEL = {exact: 'Exact Match', normalized: 'Normalized Match', partial: 'Partial Match', fuzzy: 'Fuzzy Match'};
+const STATUS_LABEL = {saved: 'সংরক্ষিত', review: 'যাচাই দরকার', ambiguous: 'একাধিক সম্ভাব্য মিল — বেছে নিন', unmatched: 'Unmatched', duplicate: 'ডুপ্লিকেট'};
+
+function getRepeatInfo(raw, qid){
+  const k = norm(raw);
+  if(!k) return { tier: 'LOW', cls: 'low', text: S.useStar ? '⭐' : 'LOW (1x)', star: '⭐', count: 1 };
+  const count = Math.max(1, S.qs.filter(function(q){
+    return q.key === k || (qid && (q.id === qid || q.dupOf === qid));
+  }).length);
+  const star = '⭐'.repeat(Math.min(count, 5));
+  if(count >= 3) return { tier: 'IMP', cls: 'imp', text: S.useStar ? star : 'IMP (' + count + 'x)', star: star, count: count };
+  if(count === 2) return { tier: 'MED', cls: 'med', text: S.useStar ? star : 'MED (2x)', star: star, count: count };
+  return { tier: 'LOW', cls: 'low', text: S.useStar ? star : 'LOW (1x)', star: star, count: count };
+}
+
+
+
+
+/* ---------- IndexedDB ---------- */
+let DB = null;
+function dbOpen(){
+  return new Promise(function(res, rej){
+    if(!window.indexedDB){ rej(new Error('IndexedDB পাওয়া যায়নি')); return; }
+    const r = indexedDB.open('bqm_db', 1);
+    r.onupgradeneeded = function(){
+      const d = r.result;
+      ['books', 'analyses', 'qs'].forEach(function(n){ if(!d.objectStoreNames.contains(n)) d.createObjectStore(n, {keyPath: 'id'}); });
+      if(!d.objectStoreNames.contains('meta')) d.createObjectStore('meta', {keyPath: 'k'});
+    };
+    r.onsuccess = function(){ res(r.result); };
+    r.onerror = function(){ rej(r.error); };
+    r.onblocked = function(){ rej(new Error('ডেটাবেস ব্লকড')); };
+  });
+}
+function dbAll(store){
+  return new Promise(function(res, rej){
+    const q = DB.transaction(store, 'readonly').objectStore(store).getAll();
+    q.onsuccess = function(){ res(q.result || []); };
+    q.onerror = function(){ rej(q.error); };
+  });
+}
+function dbPutMany(store, arr){
+  return new Promise(function(res, rej){
+    const tx = DB.transaction(store, 'readwrite');
+    const os = tx.objectStore(store);
+    arr.forEach(function(o){ os.put(o); });
+    tx.oncomplete = function(){ res(true); };
+    tx.onerror = function(){ rej(tx.error); };
+    tx.onabort = function(){ rej(tx.error || new Error('abort')); };
+  });
+}
+function dbDelMany(store, ids){
+  return new Promise(function(res, rej){
+    const tx = DB.transaction(store, 'readwrite');
+    const os = tx.objectStore(store);
+    ids.forEach(function(id){ os.delete(id); });
+    tx.oncomplete = function(){ res(true); };
+    tx.onerror = function(){ rej(tx.error); };
+    tx.onabort = function(){ rej(tx.error || new Error('abort')); };
+  });
+}
+function dbClear(store){
+  return new Promise(function(res, rej){
+    const tx = DB.transaction(store, 'readwrite');
+    tx.objectStore(store).clear();
+    tx.oncomplete = function(){ res(true); };
+    tx.onerror = function(){ rej(tx.error); };
+  });
+}
+
+function nowStr(){ const d = new Date(); return bn(String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0')); }
+function fmtDate(t){
+  const d = new Date(t);
+  return bn(String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear() + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'));
+}
+function setChip(kind, msg){ const c = $('#saveChip'); c.className = 'chip ' + kind; c.textContent = msg; }
+
+async function save(store, objs){
+  if(!S.dbOk){ setChip('bad', 'সংরক্ষণ বন্ধ'); return false; }
+  setChip('busy', 'সংরক্ষণ হচ্ছে…');
+  try{
+    await dbPutMany(store, Array.isArray(objs) ? objs : [objs]);
+    setChip('ok', 'সংরক্ষিত' + nowStr());
+    return true;
+  }catch(e){
+    setChip('bad', 'সংরক্ষণ ব্যর্থ');
+    toast('সংরক্ষণ ব্যর্থ: ' + (e && e.message ? e.message : e), 'bad');
+    return false;
+  }
+}
+async function removeFromDb(store, ids){
+  if(!S.dbOk || !ids.length) return;
+  try{ await dbDelMany(store, ids); setChip('ok', 'সংরক্ষিত  ' + nowStr()); }
+  catch(e){ setChip('bad', 'মুছতে ব্যর্থ'); }
+}
+async function saveMeta(){
+  await save('meta', [{k: 'settings', v: S.settings}, {k: 'seq', v: S.seq}, {k: 'batch', v: S.batch}]);
+}
+async function flushA(){
+  S.delA.forEach(function(id){ if(S.analyses.some(function(a){ return a.id === id; })) S.delA.delete(id); });
+  const ids = Array.from(S.dirtyA);
+  S.dirtyA.clear();
+  const arr = ids.map(function(id){ return S.analyses.find(function(a){ return a.id === id; }); }).filter(Boolean);
+  if(arr.length) await save('analyses', arr);
+  const del = Array.from(S.delA);
+  S.delA.clear();
+  if(del.length) await removeFromDb('analyses', del);
+}
+
+/* ---------- ছোট ইউটিলিটি ---------- */
+function toast(msg, kind){
+  const el = document.createElement('div');
+  el.className = 'tst ' + (kind || '');
+  el.textContent = msg;
+  $('#toast').appendChild(el);
+  setTimeout(function(){ el.remove(); }, 3200);
+}
+function busyShow(msg){ $('#busy').classList.add('on'); $('#busyMsg').textContent = msg || ''; }
+function busyHide(){ $('#busy').classList.remove('on'); }
+
+function openModal(o){
+  const el = document.createElement('div');
+  el.className = 'mback';
+  el.innerHTML = '<div class="modal ' + (o.wide ? 'wide' : '') + '" role="dialog"><div class="mhead"><b>' + esc(o.title || '') + '</b><button class="x" data-m="close">✕</button></div><div class="mbody">' + (o.html || '') + '</div><div class="mfoot"></div></div>';
+  const foot = el.querySelector('.mfoot');
+  function close(){ el.remove(); }
+  (o.actions || []).forEach(function(a){
+    const b = document.createElement('button');
+    b.className = 'btn ' + (a.cls || '');
+    b.textContent = a.label;
+    b.onclick = async function(){
+      let r;
+      try{ r = a.fn ? await a.fn(el) : undefined; }catch(e){ toast('ত্রুটি: ' + (e && e.message ? e.message : e), 'bad'); r = false; }
+      if(r !== false) close();
+    };
+    foot.appendChild(b);
+  });
+  el.querySelector('[data-m=close]').onclick = function(){ close(); if(o.onCancel) o.onCancel(); };
+  $('#modalRoot').appendChild(el);
+  if(o.onOpen) o.onOpen(el);
+  return {el: el, close: close};
+}
+function askChoice(title, msg, choices){
+  return new Promise(function(res){
+    let done = false;
+    const fin = function(v){ if(!done){ done = true; res(v); } };
+    openModal({title: title, html: '<div style="white-space:pre-wrap">' + esc(msg) + '</div>',
+      onCancel: function(){ fin(null); },
+      actions: choices.map(function(c){ return {label: c.label, cls: c.cls, fn: function(){ fin(c.val); }}; })});
+  });
+}
+async function askConfirm(msg, okLabel, danger){
+  const r = await askChoice('নিশ্চিত করুন', msg, [{label: 'বাতিল', val: false}, {label: okLabel || 'ঠিক আছে', val: true, cls: danger ? 'dng' : 'pri'}]);
+  return r === true;
+}
+function askInput(title, label, value, o){
+  o = o || {};
+  return new Promise(function(res){
+    let done = false;
+    const fin = function(v){ if(!done){ done = true; res(v); } };
+    openModal({title: title,
+      html: '<label class="lbl">' + esc(label) + '</label><input class="inp" id="aiInp" value="' + esc(value || '') + '"><div class="err" id="aiErr"></div>',
+      onCancel: function(){ fin(null); },
+      onOpen: function(el){
+        const inp = el.querySelector('#aiInp');
+        setTimeout(function(){ inp.focus(); inp.select(); }, 60);
+        inp.addEventListener('keydown', function(e){ if(e.key === 'Enter'){ const b = el.querySelectorAll('.mfoot .btn'); b[b.length - 1].click(); } });
+      },
+      actions: [
+        {label: 'বাতিল', fn: function(){ fin(null); }},
+        {label: 'ঠিক আছে', cls: 'pri', fn: function(el){
+          const v = el.querySelector('#aiInp').value;
+          const er = o.validate ? o.validate(v) : null;
+          if(er){ el.querySelector('#aiErr').textContent = er; return false; }
+          fin(v.trim());
+        }}
+      ]});
+  });
+}
+
+function copyText(t){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    return navigator.clipboard.writeText(t).then(function(){ return true; }).catch(function(){ return legacyCopy(t); });
+  }
+  return Promise.resolve(legacyCopy(t));
+}
+function legacyCopy(t){
+  try{
+    const ta = document.createElement('textarea');
+    ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    const ok = document.execCommand('copy');
+    ta.remove();
+    return ok;
+  }catch(e){ return false; }
+}
+function showTextModal(title, text){
+  openModal({title: title, wide: true, html: '<pre class="tx" id="txPre">' + esc(text) + '</pre>',
+    actions: [{label: 'কপি', cls: 'pri', fn: async function(){ const ok = await copyText(text); toast(ok ? 'কপি হয়েছে' : 'কপি ব্যর্থ — টেক্সট নির্বাচন করে কপি করুন', ok ? 'ok' : 'bad'); return false; }}, {label: 'বন্ধ'}]});
+}
+function saveTextFile(name, text, mime, bom){
+  try{
+    if(window.JSBridge && typeof window.JSBridge.saveTextFile === 'function'){
+      window.JSBridge.saveTextFile(name, text, mime || 'text/plain');
+      toast('ফাইল পাঠানো হয়েছে: ' + name, 'ok');
+      return;
+    }
+    const blob = new Blob([(bom === false ? '' : '\ufeff') + text], {type: (mime || 'text/plain') + ';charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = name;
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ URL.revokeObjectURL(url); a.remove(); }, 4000);
+    toast('ডাউনলোড শুরু হয়েছে: ' + name, 'ok');
+  }catch(e){
+    showTextModal(name, text);
+  }
+}
+function safeName(n){ return String(n).replace(/[\\\/:*?"<>|]/g, '_'); }
+function hash(s){ let h = 2166136261; for(let i = 0; i < s.length; i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36) + '_' + s.length; }
+function readFileText(f){
+  return new Promise(function(res, rej){
+    const r = new FileReader();
+    r.onload = function(){ res(String(r.result)); };
+    r.onerror = function(){ rej(r.error); };
+    r.readAsText(f, 'UTF-8');
+  });
+}
+
+/* ---------- বই ---------- */
+function getPrep(b){
+  const k = b.id + ':' + (b.rev || 0);
+  let p = S.prepCache.get(b.id);
+  if(!p || p.k !== k){ p = prepare(b); p.k = k; S.prepCache.set(b.id, p); }
+  return p;
+}
+function checkName(v, selfId){
+  v = (v || '').trim();
+  if(!v) return 'নাম লিখুন';
+  if(v.length > 60) return 'নাম ৬০ অক্ষরের মধ্যে রাখুন';
+  if(/[\\\/:*?"<>|]/.test(v)) return 'এই চিহ্নগুলো ব্যবহার করা যাবে না: \\ / : * ? " < > |';
+  const k = v.toLowerCase();
+  if(S.books.some(function(b){ return b.id !== selfId && b.name.toLowerCase() === k; })) return 'এই নামে আরেকটি ফাইল আছে — অন্য নাম দিন';
+  return null;
+}
+function uniqueDefault(n){
+  n = safeName(n).trim().slice(0, 56) || 'Textbook';
+  let c = n, i = 2;
+  while(checkName(c, null)){ c = n + ' (' + i + ')'; i++; if(i > 200) break; }
+  return c;
+}
+function makeBook(name, text, h){
+  const b = {id: 'b' + uid(), name: name, text: text, hash: h, createdAt: Date.now(), updatedAt: Date.now(), rev: 0, chapMode: 'pattern', chapRegex: '', chapters: null, cv: ENGINE_V};
+  const p = prepare(b);
+  b.chapters = p.chapters;
+  b.stats = {chars: text.length, sents: p.sents.length};
+  return b;
+}
+async function importFiles(files){
+  for(const f of files){
+    let text;
+    try{ text = await readFileText(f); }catch(e){ toast('পড়া যায়নি: ' + f.name, 'bad'); continue; }
+    text = text.replace(/^\ufeff/, '');
+    if(!text.trim()){ toast('ফাইলটি খালি: ' + f.name, 'bad'); continue; }
+    const bad = (text.match(/\ufffd/g) || []).length;
+    if(bad > Math.max(5, text.length * 0.002)){
+      const ok = await askConfirm('"' + f.name + '" UTF-8 এনকোডিংয়ে নেই বলে মনে হচ্ছে (অনেক ভাঙা অক্ষর আছে)। ফাইলটি UTF-8 হিসেবে সেভ করে আবার আপলোড করা ভালো। তবুও যুক্ত করবেন?', 'তবুও যুক্ত করুন');
+      if(!ok) continue;
+    }
+    const h = hash(text);
+    const same = S.books.find(function(b){ return b.hash === h; });
+    if(same){
+      const ok = await askConfirm('এই ফাইলের অবিকল কপি "' + same.name + '" নামে আগেই আছে। আবার যুক্ত করবেন?', 'হ্যাঁ, যুক্ত করুন');
+      if(!ok) continue;
+    }
+    const name = await askInput('বইয়ের নাম দিন', 'এই TXT ফাইলের জন্য একটি নাম (যেমন: Abhishek)', uniqueDefault(f.name.replace(/\.[^.]+$/, '')), {validate: function(v){ return checkName(v, null); }});
+    if(name === null) continue;
+    busyShow('"' + name + '" প্রস্তুত হচ্ছে…'); await tick();
+    const b = makeBook(name, text, h);
+    S.books.push(b);
+    const ok = await save('books', b);
+    busyHide();
+    toast(ok ? '"' + name + '" যুক্ত হয়েছে — ' + bn(b.stats.sents) + ' বাক্য, ' + bn(b.chapters.length) + ' অংশ' : 'যুক্ত হয়েছে কিন্তু সংরক্ষণ হয়নি', ok ? 'ok' : 'bad');
+    render(true);
+  }
+}
+function analysisName(bookName, chapTitle){ return chapTitle ? bookName + '_' + chapTitle + '_Analysis' : bookName + '_Analysis'; }
+
+async function renameBook(id){
+  const b = S.books.find(function(x){ return x.id === id; });
+  const n = await askInput('নাম পরিবর্তন', 'নতুন নাম', b.name, {validate: function(v){ return checkName(v, id); }});
+  if(n === null || n === b.name) return;
+  b.name = n; b.updatedAt = Date.now();
+  if(b.chapters && b.chapters.length && !b.chapters[0].h) b.chapters[0].title = n;
+  b.rev = (b.rev || 0) + 1;
+  S.analyses.forEach(function(a){
+    if(a.bookId !== id) return;
+    a.name = analysisName(n, a.chapTitle);
+    a.entries.forEach(function(e){ e.book = n; });
+    a.updatedAt = Date.now();
+    S.dirtyA.add(a.id);
+  });
+  await save('books', b);
+  await flushA();
+  toast('নাম পরিবর্তন হয়েছে', 'ok');
+  render(true);
+}
+async function deleteBook(id){
+  const b = S.books.find(function(x){ return x.id === id; });
+  if(!await askConfirm('"' + b.name + '" মুছে ফেলবেন? এই কাজ ফেরানো যাবে না।', 'মুছুন', true)) return;
+  const rel = S.analyses.filter(function(a){ return a.bookId === id; });
+  let delA = false;
+  if(rel.length){
+    delA = await askConfirm('এই বইয়ের সঙ্গে যুক্ত ' + bn(rel.length) + ' টি অ্যানালাইসিস ফাইলও মুছবেন?\n\n"মুছুন" দিলে ফাইলগুলোও যাবে, "রাখুন" দিলে ফাইল থেকে যাবে।', 'মুছুন', true);
+  }
+  S.books = S.books.filter(function(x){ return x.id !== id; });
+  S.prepCache.delete(id);
+  await removeFromDb('books', [id]);
+  if(delA){
+    const rm = new Set(rel.map(function(a){ return a.id; }));
+    S.analyses = S.analyses.filter(function(a){ return !rm.has(a.id); });
+    rm.forEach(function(i){ S.dirtyA.delete(i); });
+    await removeFromDb('analyses', Array.from(rm));
+    const gone = S.qs.filter(function(q){ return q.chosen && q.chosen.length && q.cands.some(function(c, ci){ return q.chosen.indexOf(ci) >= 0 && c.bid === id; }); }).map(function(q){ return q.id; });
+    if(gone.length){ S.qs = S.qs.filter(function(q){ return gone.indexOf(q.id) < 0; }); await removeFromDb('qs', gone); }
+  }
+  toast('মুছে ফেলা হয়েছে', 'ok');
+  render(true);
+}
+function chapListHtml(b){
+  const ch = b.chapters || [];
+  const total = (b.stats && b.stats.sents) || 0;
+  let h = '';
+  for(let i = 0; i < Math.min(ch.length, 300); i++){
+    const end = i + 1 < ch.length ? ch[i+1].start : total;
+    h += '<div class="chrow"><span class="mut small">' + bn(i + 1) + '</span><input class="inp" data-ci="' + i + '" value="' + esc(ch[i].title) + '"><span class="mut small">' + bn(Math.max(0, end - ch[i].start)) + ' বাক্য</span></div>';
+  }
+  if(ch.length > 300) h += '<div class="mut small">আরও ' + bn(ch.length - 300) + ' টি অংশ আছে (এখানে প্রথম ৩০০টি দেখানো হচ্ছে)</div>';
+  return h;
+}
+function chapModal(id){
+  const b = S.books.find(function(x){ return x.id === id; });
+  getPrep(b);
+  const mode = b.chapMode || 'pattern';
+  openModal({title: 'অধ্যায় — ' + b.name, wide: true,
+    html: '<div class="mut small">কীভাবে শিরোনাম শনাক্ত হবে তা বেছে "পুনরায় শনাক্ত করুন" চাপুন। শিরোনাম নিচের তালিকায় নিজেও বদলাতে পারবেন।</div>' +
+      '<label class="radio"><input type="radio" name="cm" value="pattern" ' + (mode === 'pattern' ? 'checked' : '') + '> শিরোনাম-প্যাটার্ন (অধ্যায়/পাঠ/পর্ব/পরিচ্ছেদ, #, ===, Chapter…)</label>' +
+      '<label class="radio"><input type="radio" name="cm" value="blank" ' + (mode === 'blank' ? 'checked' : '') + '> ফাঁকা লাইনে ঘেরা ছোট লাইনকে শিরোনাম ধরো</label>' +
+      '<label class="lbl">কাস্টম Regex (ঐচ্ছিক — যে লাইন মিলবে সেটিও শিরোনাম)</label><input class="inp" id="cRe" dir="ltr" placeholder="যেমন: ^পাঠ\\s*\\d+" value="' + esc(b.chapRegex || '') + '">' +
+      '<div class="btnrow"><button class="btn pri sm" id="cRedo"><svg class="sic" width="13" height="13" viewBox="0 0 512 512" fill="currentColor"><path d="M415.313 358.7c36.453-36.452 55.906-85.231 54.779-137.353c-1.112-51.375-21.964-99.908-58.715-136.66l-22.627 22.627a166.82 166.82 0 0 1 49.35 114.725c.937 43.313-15.191 83.81-45.463 114.083l-48.617 49.051l.044-89.165l-32-.016L311.992 440h144.071v-32h-89.614ZM47.937 112h89.614l-48.864 49.3c-36.453 36.451-55.906 85.231-54.779 137.352a198.68 198.68 0 0 0 58.715 136.66l22.627-22.627A166.82 166.82 0 0 1 65.9 297.962c-.937-43.314 15.191-83.811 45.463-114.083l48.617-49.051l-.044 89.165l32 .015L192.008 80H47.937Z"/></svg>পুনরায় শনাক্ত করুন</button></div><div id="cList" style="margin-top:8px">' + chapListHtml(b) + '</div>',
+    onOpen: function(el){
+      el.querySelector('#cRedo').onclick = async function(){
+        const re = el.querySelector('#cRe').value.trim();
+        if(re){ try{ new RegExp(re); }catch(e){ toast('Regex সঠিক নয়', 'bad'); return; } }
+        b.chapMode = el.querySelector('input[name=cm]:checked').value;
+        b.chapRegex = re; b.chapters = null; b.rev = (b.rev || 0) + 1;
+        busyShow('শনাক্ত হচ্ছে…'); await tick();
+        const p = getPrep(b);
+        b.chapters = p.chapters; b.cv = ENGINE_V; b.updatedAt = Date.now();
+        await save('books', b);
+        busyHide();
+        el.querySelector('#cList').innerHTML = chapListHtml(b);
+        toast(bn(b.chapters.length) + ' টি অংশ শনাক্ত হয়েছে', 'ok');
+      };
+    },
+    actions: [{label: 'বন্ধ'}, {label: 'শিরোনাম সংরক্ষণ', cls: 'pri', fn: async function(el){
+      el.querySelectorAll('#cList input[data-ci]').forEach(function(inp){
+        const i = +inp.dataset.ci;
+        const v = inp.value.trim();
+        if(b.chapters[i] && v) b.chapters[i].title = v;
+      });
+      b.updatedAt = Date.now();
+      await save('books', b);
+      toast('সংরক্ষিত', 'ok');
+      render(true);
+    }}]});
+}
+async function editBookText(id){
+  const b = S.books.find(function(x){ return x.id === id; });
+  if(b.text.length > 400000){
+    if(!await askConfirm('ফাইলটি বড় (' + bn(b.text.length) + ' অক্ষর)। এডিটর ধীর হতে পারে। চালিয়ে যাবেন?', 'চালিয়ে যান')) return;
+  }
+  openModal({title: 'টেক্সট সম্পাদনা — ' + b.name, wide: true,
+    html: '<div class="mut small">সংরক্ষণ করলে বাক্য/অধ্যায় নতুন করে শনাক্ত হবে। আগের অ্যানালাইসিস এন্ট্রি অপরিবর্তিত থাকবে (সেগুলোতে বাক্যের কপি সংরক্ষিত)।</div><textarea class="inp big" id="bkTxt" style="min-height:48vh"></textarea>',
+    onOpen: function(el){ el.querySelector('#bkTxt').value = b.text; },
+    actions: [{label: 'বাতিল'}, {label: 'সংরক্ষণ', cls: 'pri', fn: async function(el){
+      const t = el.querySelector('#bkTxt').value;
+      if(!t.trim()){ toast('টেক্সট খালি রাখা যাবে না', 'bad'); return false; }
+      busyShow('প্রস্তুত হচ্ছে…'); await tick();
+      b.text = t; b.hash = hash(t); b.chapters = null; b.rev = (b.rev || 0) + 1; b.updatedAt = Date.now();
+      const p = getPrep(b);
+      b.chapters = p.chapters; b.cv = ENGINE_V; b.stats = {chars: t.length, sents: p.sents.length};
+      await save('books', b);
+      busyHide();
+      toast('টেক্সট হালনাগাদ হয়েছে', 'ok');
+      render(true);
+    }}]});
+}
+
+/* ---------- ম্যাচিং ব্যাচ ---------- */
+function matchOpt(){ const s = S.settings; return {autoThr: s.autoThr, reviewThr: s.reviewThr, splitCh: s.splitCh, autoSave: s.autoSave, ctxN: s.ctxN, fuzzy: s.fuzzy}; }
+function newRec(raw, key, batch){
+  return {id: 'q' + uid(), seq: ++S.seq, batch: batch, raw: raw, key: key, createdAt: Date.now(), queries: [], fallback: false, cands: [], more: 0, status: 'unmatched', chosen: [], dupOf: null, repeat: false};
+}
+function commitEntry(rec, ci){
+  const c = rec.cands[ci];
+  const split = S.settings.splitCh;
+  const fk = fileKey(c, split);
+  const aid = 'a_' + fk;
+  let a = S.analyses.find(function(x){ return x.id === aid; });
+  if(!a){
+    const book = S.books.find(function(b){ return b.id === c.bid; });
+    const bname = book ? book.name : c.bname;
+    const ct = (split && c.chap !== bname) ? c.chap : null;
+    a = {id: aid, bookId: c.bid, chapTitle: ct, name: analysisName(bname, ct), entries: [], createdAt: Date.now(), updatedAt: Date.now()};
+    S.analyses.push(a);
+  }
+  if(!a.entries.some(function(e){ return e.qid === rec.id && e.ci === ci; })){
+    const others = rec.cands.filter(function(x, i){ return i !== ci && x.score >= 80; }).length;
+    a.entries.push({id: rec.id + ':' + ci, qid: rec.id, ci: ci, seq: rec.seq, raw: rec.raw, quoted: c.q, book: c.bname, chapter: c.chap, matched: c.matched, before: c.before.slice(), after: c.after.slice(), type: c.type, score: c.score, repeat: !!rec.repeat, others: others, addedAt: Date.now(), note: ''});
+    a.entries.sort(function(x, y){ return (x.seq - y.seq) || (x.ci - y.ci); });
+    a.updatedAt = Date.now();
+  }
+  if(rec.chosen.indexOf(ci) < 0) rec.chosen.push(ci);
+  rec.status = 'saved';
+  S.dirtyA.add(a.id);
+  return a;
+}
+function dropQEntries(qid){
+  for(const a of S.analyses.slice()){
+    const n = a.entries.length;
+    a.entries = a.entries.filter(function(e){ return e.qid !== qid; });
+    if(a.entries.length !== n){
+      a.updatedAt = Date.now();
+      if(!a.entries.length){
+        S.analyses = S.analyses.filter(function(x){ return x !== a; });
+        S.dirtyA.delete(a.id); S.delA.add(a.id);
+        if(S.openA === a.id) S.openA = null;
+      } else S.dirtyA.add(a.id);
+    }
+  }
+}
+function fillMatch(rec, items, custom){
+  const r = matchQuestion(rec.raw, items, matchOpt(), custom);
+  rec.queries = r.queries; rec.fallback = r.fallback; rec.cands = r.cands; rec.more = r.more; rec.chosen = [];
+  const d = decide(r.cands, matchOpt());
+  rec.status = d.status;
+  if(d.status === 'saved') commitEntry(rec, d.pick);
+}
+function buildItems(){
+  return S.books.map(function(b){ return {book: {id: b.id, name: b.name}, prep: getPrep(b)}; });
+}
+async function runBatch(text){
+  const list = splitQuestions(text);
+  if(!list.length){ toast('কোনো প্রশ্ন পাওয়া যায়নি', 'bad'); return false; }
+  if(!S.books.length){ toast('লাইব্রেরিতে কোনো TXT নেই', 'bad'); return false; }
+  busyShow('বই প্রস্তুত হচ্ছে…'); await tick();
+  const items = [];
+  for(const b of S.books){
+    const p = getPrep(b);
+    if(!b.chapters){ b.chapters = p.chapters; b.cv = ENGINE_V; }
+    items.push({book: {id: b.id, name: b.name}, prep: p});
+    await tick();
+  }
+  S.batch++;
+  const batch = S.batch;
+  const newRecs = [];
+  const delIds = [];
+  for(let i = 0; i < list.length; i++){
+    busyShow('ম্যাচিং চলছে… ' + bn(i + 1) + ' / ' + bn(list.length)); await tick();
+    const raw = list[i];
+    const key = norm(raw);
+    const pool = S.qs.concat(newRecs);
+    const prevSaved = pool.find(function(x){ return x.key === key && x.status === 'saved'; });
+        pool.filter(function(x){ return x.key === key && x.status !== 'saved' && x.status !== 'duplicate'; }).forEach(function(x){
+      const ni = newRecs.indexOf(x);
+      if(ni >= 0) newRecs.splice(ni, 1);
+      else { S.qs = S.qs.filter(function(y){ return y !== x; }); delIds.push(x.id); }
+    });
+
+    const rec = newRec(raw, key, batch);
+    if(prevSaved && !S.allowDup){ rec.status = 'duplicate'; rec.dupOf = prevSaved.id; newRecs.push(rec); continue; }
+    if(prevSaved) rec.repeat = true;
+    fillMatch(rec, items);
+    newRecs.push(rec);
+    if(i % 8 === 7) await tick();
+  }
+  S.qs = S.qs.concat(newRecs);
+  busyShow('সংরক্ষণ হচ্ছে…'); await tick();
+  await save('qs', newRecs);
+  if(delIds.length) await removeFromDb('qs', delIds);
+  await flushA();
+  await saveMeta();
+  busyHide();
+  return true;
+}
+async function rematch(rec, custom, asRepeat){
+  busyShow('ম্যাচিং চলছে…'); await tick();
+  const items = buildItems();
+  if(asRepeat) rec.repeat = true;
+  fillMatch(rec, items, custom);
+  await save('qs', rec);
+  await flushA();
+  busyHide();
+}
+
+/* ---------- ভিউ ---------- */
+function vLib(){
+  const bks = S.books.slice().sort(function(a, b){ return b.updatedAt - a.updatedAt; });
+  let h = '<div class="card hero"><div><b>TXT পাঠ্যবই লাইব্রেরি</b><div class="mut small">প্রতিটি ফাইলে নিজের পছন্দের নাম দিন — অ্যানালাইসিস ফাইল সেই নামেই তৈরি হবে।</div></div><button class="btn pri" data-act="pickTxt">' + svgIcon('plus', 14) + 'TXT আপলোড</button></div>';
+  if(!bks.length) h += '<div class="empty">' + svgIcon('lib', 32) + '<span>লাইব্রেরি এখনো খালি।<br>উপরের বোতামে চেপে বাংলা পাঠ্যবইয়ের .txt ফাইল যুক্ত করুন।</span></div>';
+  for(const b of bks){
+    const cnt = S.analyses.filter(function(a){ return a.bookId === b.id; }).reduce(function(n, a){ return n + a.entries.length; }, 0);
+    const st = b.stats || {chars: b.text.length, sents: 0};
+    h += '<div class="card book">' +
+      '<div class="book-header">' +
+        '<div class="file-badge">TXT</div>' +
+        '<div class="book-info">' +
+          '<span class="bname">' + esc(b.name) + '</span>' +
+          '<div class="book-meta">' + bn(st.chars) + ' অক্ষর · ' + bn(st.sents) + ' বাক্য · ' + bn((b.chapters || []).length) + ' অধ্যায় · ' + bn(cnt) + ' প্রশ্ন</div>' +
+        '</div>' +
+        '<button class="btn-icon-del" data-act="bkDel" data-id="' + b.id + '" title="মুছুন">' + svgIcon('trash', 16) + '</button>' +
+      '</div>' +
+      '<div class="book-tools">' +
+        '<button class="btn sm" data-act="bkRename" data-id="' + b.id + '">' + svgIcon('edit', 12) + 'নাম</button>' +
+        '<button class="btn sm" data-act="bkChap" data-id="' + b.id + '">' + svgIcon('chap', 12) + 'অধ্যায়</button>' +
+        '<button class="btn sm" data-act="bkEdit" data-id="' + b.id + '">' + svgIcon('text', 12) + 'টেক্সট</button>' +
+      '</div>' +
+    '</div>';
+  }
+  return h;
+}
+function qCountText(){ const n = splitQuestions(S.input).length; return n ? 'শনাক্ত প্রশ্ন: ' + bn(n) + ' টি' : ''; }
+function vMatch(){
+  const nb = S.books.length;
+  return '<div class="card">' + (nb ? '' : '<div class="warnbox">আগে লাইব্রেরিতে অন্তত একটি TXT ফাইল যুক্ত করুন।</div>') +
+    '<label class="lbl">প্রশ্ন পেস্ট করুন (একটি বা একাধিক)</label>' +
+    '<textarea id="qInput" class="inp big" placeholder="প্রশ্ন: “বৃদ্ধ মানুষটি বাড়ি ফিরে এলেন” — লাইনটি কোন অধ্যায় থেকে নেওয়া হয়েছে?&#10;&#10;একাধিক প্রশ্ন আলাদা করতে ফাঁকা লাইন বা ১. ২. ৩. নম্বর ব্যবহার করুন।">' + esc(S.input) + '</textarea>' +
+    '<div class="mut small" id="qCount">' + qCountText() + '</div>' +
+    '<div class="toggle"><span>পুনরাবৃত্ত প্রশ্ন আলাদা এন্ট্রি হিসেবে রাখুন</span><input type="checkbox" data-act="togDup" ' + (S.allowDup ? 'checked' : '') + '></div>' +
+    '<div class="toggle"><span>নির্ভরযোগ্য মিল স্বয়ংক্রিয়ভাবে সংরক্ষণ</span><input type="checkbox" data-act="togAuto" ' + (S.settings.autoSave ? 'checked' : '') + '></div>' +
+    '<div class="btnrow"><button class="btn pri" data-act="runMatch" ' + (nb ? '' : 'disabled') + '>' + svgIcon('match', 14) + 'ম্যাচ করুন</button><button class="btn" data-act="clearInput">পরিষ্কার</button></div></div>' +
+    '<div class="card mut small">কোটেশন ("…", “…”, ‘…’) এর ভিতরের লাইনটিই অনুসন্ধান হয়। কোটেশন না থাকলে প্রশ্ন থেকে প্রাসঙ্গিক বাংলা অংশ বেছে নেওয়া হয়। যে মিলের পক্ষে যথেষ্ট প্রমাণ নেই তা নিশ্চিত হিসেবে দেখানো হয় না — ‘যাচাই দরকার’ বা ‘Unmatched’-এ থাকে।</div>';
+}
+function candHtml(rec, c, ci, sel, saved){
+  const btn = sel ? '<div class="selb">✓ অ্যানালাইসিসে সংরক্ষিত</div>' : '<button class="btn sm pri" data-act="pick" data-id="' + rec.id + '" data-ci="' + ci + '">' + (saved ? 'এটিও যোগ করুন' : 'এটি সংরক্ষণ করুন') + '</button>';
+  return '<div class="cand ' + (sel ? 'sel' : '') + '"><div class="chead">' + esc(c.bname) + '<span class="sep">›</span>' + esc(c.chap) + '</div>' +
+    '<div class="chips"><span class="tp ' + c.type + '">' + TYPE_LABEL[c.type] + '</span><span class="sc">Confidence ' + bn(c.score) + '%</span>' + (c.ctx != null ? '<span class="cx">প্রাসঙ্গিক যাচাই ' + bn(c.ctx) + '%</span>' : '') + '</div>' +
+    '<div class="bar"><i style="width:' + c.score + '%"></i></div>' +
+    '<div class="mut small">অনুসন্ধান: ' + esc(c.q) + '</div>' +
+    '<div class="ctxt"><span class="dim">' + esc(c.before.join(' ')) + '</span> <mark>' + esc(c.matched) + '</mark> <span class="dim">' + esc(c.after.join(' ')) + '</span></div>' + btn + '</div>';
+}
+function qCardHtml(rec){
+  let chap = '';
+  if(rec.chosen && rec.chosen.length && rec.cands && rec.cands[rec.chosen[0]]){
+    chap = rec.cands[rec.chosen[0]].chap;
+  } else if(rec.cands && rec.cands.length){
+    chap = rec.cands[0].chap;
+  } else if(rec.dupOf){
+    const prev = S.qs.find(function(x){ return x.id === rec.dupOf; });
+    if(prev){
+      if(prev.chosen && prev.chosen.length && prev.cands && prev.cands[prev.chosen[0]]){
+        chap = prev.cands[prev.chosen[0]].chap;
+      } else if(prev.cands && prev.cands.length){
+        chap = prev.cands[0].chap;
+      }
+    }
+  }
+  return chap || 'অধ্যায় পাওয়া যায়নি';
+}
+
+
+
+
+function filteredQs(){
+  const f = S.rf;
+  let a = S.qs.slice();
+  const maxBatch = S.qs.reduce(function(m, q){ return Math.max(m, q.batch || 0); }, 0);
+  const curBatch = (S.batch && S.batch > 0) ? S.batch : maxBatch;
+  if(f === 'batch') a = a.filter(function(x){ return x.batch === curBatch; });
+  else if(f === 'no_chap') a = a.filter(function(x){ return qCardHtml(x) === 'অধ্যায় পাওয়া যায়নি'; });
+  else if(f !== 'all') a = a.filter(function(x){ return x.status === f; });
+  a.sort(function(x, y){ return f === 'batch' ? x.seq - y.seq : y.seq - x.seq; });
+  return a;
+}
+
+function vResults(){
+  const maxBatch = S.qs.reduce(function(m, q){ return Math.max(m, q.batch || 0); }, 0);
+  if(!S.batch && maxBatch) S.batch = maxBatch;
+  const curBatch = (S.batch && S.batch > 0) ? S.batch : maxBatch;
+  const cnt = {saved: 0, review: 0, ambiguous: 0, unmatched: 0, duplicate: 0};
+  S.qs.forEach(function(q){ cnt[q.status] = (cnt[q.status] || 0) + 1; });
+  const bt = S.qs.filter(function(x){ return x.batch === curBatch; });
+  const noChapCnt = S.qs.filter(function(q){ return qCardHtml(q) === 'অধ্যায় পাওয়া যায়নি'; }).length;
+  const chips = [
+    ['batch', 'সর্বশেষ ব্যাচ (' + bn(bt.length) + ')'],
+    ['all', 'সব (' + bn(S.qs.length) + ')'],
+    ['saved', 'সংরক্ষিত (' + bn(cnt.saved) + ')'],
+    ['no_chap', 'খুঁজে না পাওয়া অধ্যায় (' + bn(noChapCnt) + ')'],
+    ['review', 'যাচাই (' + bn(cnt.review) + ')'],
+    ['ambiguous', 'একাধিক মিল (' + bn(cnt.ambiguous) + ')'],
+    ['unmatched', 'Unmatched (' + bn(cnt.unmatched) + ')'],
+    ['duplicate', 'ডুপ্লিকেট (' + bn(cnt.duplicate) + ')']
+  ];
+  let h = '<div class="filters">' + chips.map(function(c){ return '<button class="fch ' + (S.rf === c[0] ? 'on' : '') + '" data-act="rf" data-f="' + c[0] + '">' + c[1] + '</button>'; }).join('') + '</div>';
+  const list = filteredQs();
+  if(!list.length) return h + '<div class="empty">' + svgIcon('results', 32) + '<span>এখানে দেখানোর মতো কিছু নেই।</span></div>';
+  const validGroups = new Map();
+  const noChapRecs = [];
+  list.slice(0, S.rLimit).forEach(function(rec){
+    const chap = qCardHtml(rec);
+    if(chap === 'অধ্যায় পাওয়া যায়নি'){
+      noChapRecs.push(rec);
+    } else {
+      if(!validGroups.has(chap)) validGroups.set(chap, []);
+      validGroups.get(chap).push(rec);
+    }
+  });
+  let chIdx = 1;
+  validGroups.forEach(function(recs, chapName){
+    h += '<div class="card" style="padding:10px 12px;margin-bottom:8px">' +
+      '<div style="font-weight:700;font-size:14.5px;color:var(--pri);margin-bottom:6px;border-bottom:1px dashed var(--bd);padding-bottom:4px">' +
+        bn(chIdx) + '. ' + esc(chapName) +
+      '</div>' +
+      '<div style="display:flex;flex-direction:column;gap:5px">';
+    recs.forEach(function(rec, qIdx){
+      h += '<div style="padding:6px 8px;background:var(--bg);border-radius:4px;font-size:13.5px;line-height:1.45;word-break:break-word">' +
+        '<span style="font-weight:600;color:var(--mut);margin-right:6px">' + bn(qIdx + 1) + '.</span>' +
+        esc(rec.raw) +
+      '</div>';
+    });
+    h += '</div></div>';
+    chIdx++;
+  });
+  if(noChapRecs.length){
+    h += '<div class="card" style="padding:10px 12px;margin-bottom:8px;border-left:4px solid var(--warn)">' +
+      '<div style="font-weight:700;font-size:14.5px;color:var(--warn);margin-bottom:6px;border-bottom:1px dashed var(--bd);padding-bottom:4px;display:flex;align-items:center;justify-content:space-between">' +
+        '<span>⚠️ খুঁজে না পাওয়া অধ্যায়</span>' +
+        '<span class="badge" style="background:#fef3c7;color:#b45309">' + bn(noChapRecs.length) + ' টি প্রশ্ন</span>' +
+      '</div>' +
+      '<div style="display:flex;flex-direction:column;gap:5px">';
+    noChapRecs.forEach(function(rec, qIdx){
+      h += '<div style="padding:6px 8px;background:var(--bg);border-radius:4px;font-size:13.5px;line-height:1.45;word-break:break-word">' +
+        '<span style="font-weight:600;color:var(--mut);margin-right:6px">' + bn(qIdx + 1) + '.</span>' +
+        esc(rec.raw) +
+      '</div>';
+    });
+    h += '</div></div>';
+  }
+  if(list.length > S.rLimit) h += '<div class="btnrow"><button class="btn" data-act="moreR">আরও দেখান (' + bn(list.length - S.rLimit) + ')</button></div>';
+  return h;
+}
+
+
+function sortedEntries(a){
+  return a.entries.slice().sort(function(x, y){ return (x.seq - y.seq) || (x.ci - y.ci); }).map(function(e, i){ return {e: e, serial: i + 1}; });
+}
+function vAnalysis(){
+  if(S.openA){
+    const a = S.analyses.find(function(x){ return x.id === S.openA; });
+    if(a) return vAnalysisOpen(a);
+    S.openA = null;
+  }
+  const list = S.analyses.slice().sort(function(a, b){ return b.updatedAt - a.updatedAt; });
+  if(!list.length) return '<div class="empty">' + svgIcon('analysis', 32) + '<span>এখনো কোনো অ্যানালাইসিস ফাইল নেই।<br>প্রশ্ন ম্যাচ হলে স্বয়ংক্রিয়ভাবে তৈরি হবে।</span></div>';
+  return list.map(function(a){
+    return '<div class="card"><b>' + esc(a.name) + '</b><div class="mut small">' + bn(a.entries.length) + ' টি প্রশ্ন · হালনাগাদ ' + fmtDate(a.updatedAt) + '</div>' +
+      '<div class="btnrow"><button class="btn sm pri" data-act="openA" data-id="' + a.id + '">খুলুন</button><button class="btn sm" data-act="expA" data-id="' + a.id + '">TXT Export</button><button class="btn sm" data-act="copyA" data-id="' + a.id + '">কপি</button><button class="btn sm dng" data-act="delA" data-id="' + a.id + '">মুছুন</button></div></div>';
+  }).join('');
+}
+function vAnalysisOpen(a){
+  const chaps = Array.from(new Set(a.entries.map(function(e){ return e.chapter; })));
+  const sel = function(v, c, l){ return '<option value="' + esc(v) + '" ' + (v === c ? 'selected' : '') + '>' + esc(l) + '</option>'; };
+  return '<div class="card"><button class="btn sm" data-act="backA">← সব ফাইল</button><div style="margin-top:6px"><b>' + esc(a.name) + '</b></div><div class="mut small">' + bn(a.entries.length) + ' টি প্রশ্ন · হালনাগাদ ' + fmtDate(a.updatedAt) + '</div>' +
+    '<div class="btnrow"><button class="btn sm pri" data-act="expA" data-id="' + a.id + '">TXT Export</button><button class="btn sm" data-act="copyA" data-id="' + a.id + '">সম্পূর্ণ কপি</button><button class="btn sm" data-act="viewA" data-id="' + a.id + '">টেক্সট দেখুন</button><button class="btn sm" data-act="dupViewA" data-id="' + a.id + '">ডুপ্লিকেট ও নির্দিষ্ট প্রশ্ন</button><button class="btn sm ' + (S.useStar ? 'pri' : '') + '" data-act="togStar">' + (S.useStar ? '⭐ স্টার মোড (চালু)' : '⭐ স্টার ব্যবহার করুন') + '</button><button class="btn sm dng" data-act="delA" data-id="' + a.id + '">ফাইল মুছুন</button></div></div>' +
+    '<div class="card"><input class="inp" id="aq" placeholder="প্রশ্ন / লাইন / অধ্যায় খুঁজুন" value="' + esc(S.aq) + '">' +
+    '<div class="row2" style="margin-top:6px"><select class="inp" id="af">' + sel('all', S.af, 'সব ধরন') + sel('exact', S.af, 'Exact') + sel('normalized', S.af, 'Normalized') + sel('partial', S.af, 'Partial') + sel('fuzzy', S.af, 'Fuzzy') + '</select>' +
+    '<select class="inp" id="as">' + sel('seq', S.as, 'ইনপুট ক্রম') + sel('seqd', S.as, 'উল্টো ক্রম') + sel('score', S.as, 'Confidence (বেশি→কম)') + sel('chap', S.as, 'অধ্যায় অনুযায়ী') + '</select></div>' +
+    (chaps.length > 1 ? '<select class="inp" id="ac" style="margin-top:6px">' + sel('all', S.ac, 'সব অধ্যায়') + chaps.map(function(c){ return sel(c, S.ac, c); }).join('') + '</select>' : '') + '</div>' +
+    '<div id="alist">' + entriesHtml(a) + '</div>';
+}
+
+function entriesHtml(a){
+  let arr = sortedEntries(a);
+  const q = norm(S.aq);
+  if(q) arr = arr.filter(function(x){ return norm(x.e.raw).indexOf(q) >= 0; });
+  if(S.as === 'seqd') arr.reverse();
+  if(!arr.length) return '<div class="empty">কিছু পাওয়া যায়নি।</div>';
+  let h = '';
+    h += arr.slice(0, S.aLimit).map(function(x, idx){
+    const e = x.e;
+    const rep = getRepeatInfo(e.raw, e.qid);
+    const badge = '<span class="badge ' + rep.cls + '" style="font-size:10.5px;padding:1px 6px;margin-left:6px;vertical-align:middle">' + rep.text + '</span>';
+    return '<div class="card" style="padding:5px 8px;margin-bottom:4px;line-height:1.4"><span class="qno" style="font-weight:700;margin-right:6px">' + bn(idx + 1) + '.</span>' + esc(e.raw) + badge + '</div>';
+  }).join('');
+
+  if(arr.length > S.aLimit) h += '<div class="btnrow"><button class="btn" data-act="moreA">আরও দেখান</button></div>';
+  return h;
+}
+
+
+function analysisText(a){
+  const es = sortedEntries(a);
+  let t = '';
+  es.forEach(function(x, idx){
+    const rep = getRepeatInfo(x.e.raw, x.e.qid);
+    t += bn(idx + 1) + '. ' + x.e.raw + ' [' + rep.text + ']\n';
+  });
+  return t.trim();
+}
+
+
+function opt(v, cur, l){ return '<option value="' + v + '" ' + (String(v) === String(cur) ? 'selected' : '') + '>' + l + '</option>'; }
+function vSettings(){
+  const s = S.settings;
+  return '<div class="card"><b>ম্যাচিং সেটিংস</b>' +
+    '<div class="toggle"><span>নির্ভরযোগ্য মিল স্বয়ংক্রিয়ভাবে সংরক্ষণ</span><input type="checkbox" data-set="autoSave" ' + (s.autoSave ? 'checked' : '') + '></div>' +
+    '<div class="toggle"><span>অটো-সংরক্ষণের ন্যূনতম Confidence</span><select data-set="autoThr">' + opt(90, s.autoThr, '৯০%') + opt(95, s.autoThr, '৯৫%') + opt(100, s.autoThr, '১০০% (শুধু হুবহু বাক্য)') + '</select></div>' +
+    '<div class="toggle"><span>এর নিচে Unmatched ধরার সীমা</span><select data-set="reviewThr">' + opt(45, s.reviewThr, '৪৫%') + opt(55, s.reviewThr, '৫৫%') + opt(65, s.reviewThr, '৬৫%') + opt(75, s.reviewThr, '৭৫%') + '</select></div>' +
+    '<div class="toggle"><span>আগে-পরে প্রাসঙ্গিক বাক্য</span><select data-set="ctxN">' + opt(1, s.ctxN, '১টি') + opt(2, s.ctxN, '২টি') + opt(3, s.ctxN, '৩টি') + opt(4, s.ctxN, '৪টি') + '</select></div>' +
+    '<div class="toggle"><span>অধ্যায় অনুযায়ী আলাদা অ্যানালাইসিস ফাইল<br><span class="mut small">বন্ধ থাকলে প্রতি TXT-এর জন্য একটি ফাইল</span></span><input type="checkbox" data-set="splitCh" ' + (s.splitCh ? 'checked' : '') + '></div>' +
+    '<div class="toggle"><span>Fuzzy ম্যাচ (বানান/টাইপের ভুল ধরা)</span><input type="checkbox" data-set="fuzzy" ' + (s.fuzzy ? 'checked' : '') + '></div></div>' +
+    '<div class="card"><b>ব্যাকআপ ও পুনরুদ্ধার</b><div class="mut small">বই, অ্যানালাইসিস ফাইল, প্রশ্ন ও সেটিংস — সব একটি JSON ফাইলে।</div>' +
+    '<div class="btnrow"><button class="btn pri" data-act="bkExport">' + svgIcon('dl', 14) + 'ব্যাকআপ Export</button><button class="btn" data-act="bkImport">' + svgIcon('ul', 14) + 'পুনরুদ্ধার Import</button></div></div>' +
+    '<div class="card"><b>সংরক্ষণের অবস্থা</b><div class="mut small">ডেটাবেস: ' + (S.dbOk ? 'চালু ✓ (IndexedDB)' : '<span style="color:var(--bad)">বন্ধ — ডেটা স্থায়ী হবে না, ব্যাকআপ নিন</span>') +
+    '<br>স্থায়ী স্টোরেজ: ' + (S.persisted === true ? 'নিশ্চিত ✓' : S.persisted === false ? 'নিশ্চিত নয়' : 'অজানা') +
+    '<br>বই ' + bn(S.books.length) + ' · অ্যানালাইসিস ফাইল ' + bn(S.analyses.length) + ' · প্রশ্ন ' + bn(S.qs.length) + '</div></div>' +
+    '<div class="card"><b>বিপজ্জনক অংশ</b><div class="btnrow"><button class="btn dng" data-act="wipe">সব ডেটা মুছুন</button></div></div>';
+}
+
+/* ---------- রেন্ডার ---------- */
+function render(keep){
+  const titles = {lib: 'টেক্সটবুক লাইব্রেরি', match: 'প্রশ্ন ম্যাচার', results: 'ম্যাচ রেজাল্ট', analysis: 'অ্যানালাইসিস লাইব্রেরি', settings: 'সেটিংস ও ব্যাকআপ'};
+  document.querySelectorAll('#tabs button').forEach(function(b){ b.classList.toggle('on', b.dataset.v === S.view); });
+  $('#pgTitle').textContent = titles[S.view];
+  const v = $('#view');
+  const st = v.scrollTop;
+  const fn = {lib: vLib, match: vMatch, results: vResults, analysis: vAnalysis, settings: vSettings}[S.view];
+  v.innerHTML = fn();
+  v.scrollTop = keep ? st : 0;
+  const pend = S.qs.filter(function(q){ return q.status === 'review' || q.status === 'ambiguous' || q.status === 'unmatched'; }).length;
+  const bd = $('#bdgR');
+  bd.style.display = pend ? '' : 'none';
+  bd.textContent = bn(Math.min(pend, 99));
+}
+function go(view){ S.view = view; if(view === 'analysis') S.openA = null; render(false); }
+
+/* ---------- অ্যাকশন ---------- */
+const ACT = {
+  pickTxt: function(){ $('#fileTxt').click(); },
+  bkRename: function(el){ return renameBook(el.dataset.id); },
+  bkChap: function(el){ chapModal(el.dataset.id); },
+  bkEdit: function(el){ return editBookText(el.dataset.id); },
+  bkDel: function(el){ return deleteBook(el.dataset.id); },
+  togDup: function(el){ S.allowDup = el.checked; },
+  togAuto: async function(el){ S.settings.autoSave = el.checked; await saveMeta(); },
+  clearInput: function(){ S.input = ''; render(true); },
+  runMatch: async function(){
+    S.input = $('#qInput') ? $('#qInput').value : S.input;
+    const ok = await runBatch(S.input);
+    if(ok){ S.view = 'results'; S.rf = 'batch'; S.rLimit = 60; render(false); const t = S.qs.filter(function(x){ return x.batch === S.batch; }); toast(bn(t.length) + ' টি প্রশ্ন বিশ্লেষিত — সংরক্ষিত ' + bn(t.filter(function(x){ return x.status === 'saved'; }).length), 'ok'); }
+  },
+  rf: function(el){ S.rf = el.dataset.f; S.rLimit = 60; render(false); },
+  moreR: function(){ S.rLimit += 60; render(true); },
+  pick: async function(el){
+    const rec = S.qs.find(function(q){ return q.id === el.dataset.id; });
+    const a = commitEntry(rec, +el.dataset.ci);
+    await save('qs', rec); await flushA();
+    toast('সংরক্ষিত → ' + a.name, 'ok');
+    render(true);
+  },
+  repick: async function(el){
+    const rec = S.qs.find(function(q){ return q.id === el.dataset.id; });
+    dropQEntries(rec.id);
+    rec.chosen = [];
+    rec.status = rec.cands.length && rec.cands[0].score >= S.settings.reviewThr ? 'review' : 'unmatched';
+    await save('qs', rec); await flushA();
+    toast('আবার বাছাইয়ের জন্য খোলা হয়েছে', 'ok');
+    render(true);
+  },
+  goFile: function(el){
+    const rec = S.qs.find(function(q){ return q.id === el.dataset.id; });
+    const c = rec.cands[rec.chosen[0]];
+    const a = S.analyses.find(function(x){ return x.entries.some(function(e){ return e.qid === rec.id; }); });
+    if(a){ S.openA = a.id; S.aq = norm(rec.raw).slice(0, 0); S.view = 'analysis'; render(false); }
+    else toast('ফাইল পাওয়া যায়নি: ' + (c ? c.bname : ''), 'bad');
+  },
+  delQ: async function(el){
+    const rec = S.qs.find(function(q){ return q.id === el.dataset.id; });
+    if(!await askConfirm('এই প্রশ্নটি মুছবেন? অ্যানালাইসিস ফাইল থেকেও এন্ট্রি সরে যাবে।', 'মুছুন', true)) return;
+    dropQEntries(rec.id);
+    S.qs = S.qs.filter(function(q){ return q.id !== rec.id; });
+    await removeFromDb('qs', [rec.id]); await flushA();
+    render(true);
+  },
+  addDup: async function(el){
+    const rec = S.qs.find(function(q){ return q.id === el.dataset.id; });
+    await rematch(rec, null, true);
+    toast('আলাদা এন্ট্রি হিসেবে বিশ্লেষিত', 'ok');
+    render(true);
+  },
+  research: async function(el){
+    const rec = S.qs.find(function(q){ return q.id === el.dataset.id; });
+    const inp = document.getElementById('rs_' + rec.id);
+    const v = inp ? inp.value.trim() : '';
+    if(v.length < 2){ toast('একটি লাইন লিখুন', 'bad'); return; }
+    await rematch(rec, [v], false);
+    render(true);
+  },
+  openA: function(el){ S.openA = el.dataset.id; S.aq = ''; S.af = 'all'; S.as = 'seq'; S.ac = 'all'; S.aLimit = 80; render(false); },
+  backA: function(){ S.openA = null; render(false); },
+  moreA: function(){ S.aLimit += 80; const a = S.analyses.find(function(x){ return x.id === S.openA; }); $('#alist').innerHTML = entriesHtml(a); },
+  expA: function(el){ const a = S.analyses.find(function(x){ return x.id === el.dataset.id; }); saveTextFile(safeName(a.name) + '.txt', analysisText(a), 'text/plain'); },
+  copyA: async function(el){ const a = S.analyses.find(function(x){ return x.id === el.dataset.id; }); const ok = await copyText(analysisText(a)); if(ok) toast('সম্পূর্ণ অ্যানালাইসিস কপি হয়েছে', 'ok'); else showTextModal(a.name, analysisText(a)); },
+    viewA: function(el){ const a = S.analyses.find(function(x){ return x.id === el.dataset.id; }); showTextModal(a.name, analysisText(a)); },
+  dupViewA: function(el){
+    const a = S.analyses.find(function(x){ return x.id === el.dataset.id; });
+    if(!a) return;
+    const es = sortedEntries(a);
+    let dupCount = 0;
+    let listHtml = '';
+    let fullCopyTxt = 'অধ্যায়ভিত্তিক ডুপ্লিকেট ও নির্দিষ্ট প্রশ্নাবলি — ' + a.name + '\n==========================================\n\n';
+    es.forEach(function(x, idx){
+      const e = x.e;
+      const rep = getRepeatInfo(e.raw, e.qid);
+      const isDup = rep.count > 1;
+      if(isDup) dupCount++;
+      const badgeTxt = S.useStar ? rep.star : (isDup ? 'ডুপ্লিকেট (' + bn(rep.count) + ' বার)' : 'একক প্রশ্ন');
+      const badgeCls = isDup ? 'imp' : 'low';
+      listHtml += '<div class="card" style="padding:6px 10px;margin-bottom:6px;border-left:3px solid ' + (isDup ? 'var(--bad)' : 'var(--pri)') + '">' +
+        '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">' +
+          '<div style="line-height:1.4"><b>' + bn(idx + 1) + '.</b> ' + esc(e.raw) + '</div>' +
+          '<span class="badge ' + badgeCls + '" style="font-size:10.5px;padding:1px 6px;white-space:nowrap">' + badgeTxt + '</span>' +
+        '</div>' +
+      '</div>';
+      fullCopyTxt += bn(idx + 1) + '. ' + e.raw + ' [' + badgeTxt + ']\n';
+    });
+    const summaryHtml = '<div class="mut small" style="margin-bottom:8px">মোট নির্দিষ্ট প্রশ্ন: <b>' + bn(es.length) + '</b> টি · পুনরাবৃত্ত (ডুপ্লিকেট) প্রশ্ন: <b>' + bn(dupCount) + '</b> টি</div>';
+    openModal({
+      title: 'ডুপ্লিকেট ও নির্দিষ্ট প্রশ্ন — ' + a.name,
+      wide: true,
+      html: summaryHtml + '<div style="max-height:60vh;overflow-y:auto">' + listHtml + '</div>',
+      actions: [
+        {label: 'Copy All (সব কপি)', cls: 'pri', fn: async function(){
+          const ok = await copyText(fullCopyTxt.trim());
+          toast(ok ? 'সমস্ত প্রশ্ন সফলভাবে কপি হয়েছে' : 'কপি করা সম্ভব হয়নি', ok ? 'ok' : 'bad');
+          return false;
+        }},
+        {label: 'বন্ধ'}
+      ]
+    });
+  },
+  togStar: function(){
+    S.useStar = !S.useStar;
+    render(true);
+    toast(S.useStar ? '⭐ স্টার ডিসপ্লে সক্রিয় হয়েছে' : '🏷️ ট্যাগ ডিসপ্লে (IMP/MED/LOW) সক্রিয় হয়েছে', 'ok');
+  },
+  delA: async function(el){
+
+    const a = S.analyses.find(function(x){ return x.id === el.dataset.id; });
+    if(!await askConfirm('"' + a.name + '" ফাইল মুছবেন? এর ' + bn(a.entries.length) + ' টি প্রশ্ন সরে যাবে।', 'মুছুন', true)) return;
+    const qids = new Set(a.entries.map(function(e){ return e.qid; }));
+    qids.forEach(function(id){ dropQEntries(id); });
+    const gone = [];
+    S.qs = S.qs.filter(function(q){ if(qids.has(q.id) && !S.analyses.some(function(x){ return x.entries.some(function(e){ return e.qid === q.id; }); })){ gone.push(q.id); return false; } return true; });
+    await removeFromDb('qs', gone); await flushA();
+    S.openA = null;
+    render(false);
+  },
+  editE: function(el){
+    const a = S.analyses.find(function(x){ return x.id === el.dataset.a; });
+    const e = a.entries.find(function(x){ return x.id === el.dataset.id; });
+    openModal({title: 'এন্ট্রি সম্পাদনা', wide: true,
+      html: '<label class="lbl">প্রশ্ন</label><textarea class="inp" id="eRaw" rows="4"></textarea><label class="lbl">উদ্ধৃত লাইন</label><textarea class="inp" id="eQ" rows="2"></textarea><label class="lbl">নোট</label><textarea class="inp" id="eN" rows="2"></textarea>',
+      onOpen: function(m){ m.querySelector('#eRaw').value = e.raw; m.querySelector('#eQ').value = e.quoted; m.querySelector('#eN').value = e.note || ''; },
+      actions: [{label: 'বাতিল'}, {label: 'সংরক্ষণ', cls: 'pri', fn: async function(m){
+        e.raw = m.querySelector('#eRaw').value.trim() || e.raw;
+        e.quoted = m.querySelector('#eQ').value.trim() || e.quoted;
+        e.note = m.querySelector('#eN').value.trim();
+        a.updatedAt = Date.now(); S.dirtyA.add(a.id);
+        await flushA(); render(true);
+      }}]});
+  },
+  delE: async function(el){
+    const a = S.analyses.find(function(x){ return x.id === el.dataset.a; });
+    const e = a.entries.find(function(x){ return x.id === el.dataset.id; });
+    if(!await askConfirm('এই এন্ট্রি মুছবেন?', 'মুছুন', true)) return;
+    a.entries = a.entries.filter(function(x){ return x !== e; });
+    a.updatedAt = Date.now();
+    const rec = S.qs.find(function(q){ return q.id === e.qid; });
+    if(rec){
+      rec.chosen = rec.chosen.filter(function(ci){ return ci !== e.ci; });
+      if(!rec.chosen.length){ S.qs = S.qs.filter(function(q){ return q !== rec; }); await removeFromDb('qs', [rec.id]); }
+      else await save('qs', rec);
+    }
+    if(!a.entries.length){ S.analyses = S.analyses.filter(function(x){ return x !== a; }); S.delA.add(a.id); S.openA = null; }
+    else S.dirtyA.add(a.id);
+    await flushA();
+    render(true);
+  },
+  bkExport: function(){
+    const d = new Date();
+    const stamp = d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0');
+    const obj = {app: 'bqm', version: 1, exportedAt: Date.now(), books: S.books, analyses: S.analyses, qs: S.qs, settings: S.settings, seq: S.seq, batch: S.batch};
+    saveTextFile('QMatcher_Backup_' + stamp + '.json', JSON.stringify(obj), 'application/json', false);
+  },
+  bkImport: function(){ $('#fileBackup').click(); },
+  wipe: async function(){
+    if(!await askConfirm('সব বই, অ্যানালাইসিস ফাইল ও প্রশ্ন মুছে যাবে। আগে ব্যাকআপ নিয়েছেন?', 'এগিয়ে যান', true)) return;
+    if(!await askConfirm('সত্যিই সব মুছবেন? এটি ফেরানো যাবে না।', 'হ্যাঁ, সব মুছুন', true)) return;
+    try{ for(const st of ['books', 'analyses', 'qs']) await dbClear(st); }catch(e){ toast('মুছতে ব্যর্থ', 'bad'); return; }
+    S.books = []; S.analyses = []; S.qs = []; S.prepCache.clear(); S.openA = null;
+    setChip('ok', 'সংরক্ষিত  ' + nowStr());
+    toast('সব ডেটা মুছে গেছে', 'ok');
+    render(false);
+  }
+};
+
+async function restoreBackup(file){
+  let obj;
+  try{ obj = JSON.parse((await readFileText(file)).replace(/^\ufeff/, '')); }catch(e){ toast('JSON পড়া যায়নি', 'bad'); return; }
+  if(!obj || obj.app !== 'bqm' || !Array.isArray(obj.books)){ toast('এটি এই অ্যাপের ব্যাকআপ ফাইল নয়', 'bad'); return; }
+  const mode = await askChoice('পুনরুদ্ধার', 'ব্যাকআপে আছে: বই ' + bn(obj.books.length) + ', অ্যানালাইসিস ' + bn((obj.analyses || []).length) + ', প্রশ্ন ' + bn((obj.qs || []).length) + '।\n\nপ্রতিস্থাপন: বর্তমান সব ডেটা মুছে ব্যাকআপ বসবে।\nমার্জ: বর্তমান ডেটা রেখে নতুনগুলো যোগ হবে।', [{label: 'বাতিল', val: null}, {label: 'মার্জ', val: 'merge'}, {label: 'প্রতিস্থাপন', val: 'replace', cls: 'dng'}]);
+  if(!mode) return;
+  busyShow('পুনরুদ্ধার হচ্ছে…'); await tick();
+  try{
+    if(mode === 'replace'){
+      for(const st of ['books', 'analyses', 'qs']) await dbClear(st);
+      S.books = obj.books; S.analyses = obj.analyses || []; S.qs = obj.qs || [];
+      S.settings = Object.assign({}, DEFAULTS, obj.settings || {});
+      S.seq = obj.seq || 0; S.batch = obj.batch || 0;
+    } else {
+      const names = new Set(S.books.map(function(b){ return b.name.toLowerCase(); }));
+      const ids = new Set(S.books.map(function(b){ return b.id; }));
+      obj.books.forEach(function(b){
+        if(ids.has(b.id)) return;
+        let n = b.name, i = 2;
+        while(names.has(n.toLowerCase())){ n = b.name + ' (' + i + ')'; i++; }
+        if(n !== b.name){ b.name = n; }
+        names.add(n.toLowerCase()); S.books.push(b);
+      });
+      (obj.analyses || []).forEach(function(a){
+        const ex = S.analyses.find(function(x){ return x.id === a.id; });
+        if(!ex){ S.analyses.push(a); return; }
+        const have = new Set(ex.entries.map(function(e){ return e.id; }));
+        a.entries.forEach(function(e){ if(!have.has(e.id)) ex.entries.push(e); });
+        ex.entries.sort(function(x, y){ return (x.seq - y.seq) || (x.ci - y.ci); });
+        ex.updatedAt = Math.max(ex.updatedAt, a.updatedAt);
+      });
+      const qi = new Set(S.qs.map(function(q){ return q.id; }));
+      (obj.qs || []).forEach(function(q){ if(!qi.has(q.id)) S.qs.push(q); });
+      S.seq = Math.max(S.seq, obj.seq || 0); S.batch = Math.max(S.batch, obj.batch || 0);
+    }
+    S.prepCache.clear();
+    await save('books', S.books); await save('analyses', S.analyses); await save('qs', S.qs); await saveMeta();
+    toast('পুনরুদ্ধার সম্পন্ন', 'ok');
+  }catch(e){ toast('পুনরুদ্ধার ব্যর্থ: ' + (e && e.message ? e.message : e), 'bad'); }
+  busyHide();
+  render(false);
+}
+
+/* ---------- ইভেন্ট ---------- */
+document.addEventListener('DOMContentLoaded', function(){
+  $('#tabs').addEventListener('click', function(e){ const b = e.target.closest('button[data-v]'); if(b) go(b.dataset.v); });
+  const view = $('#view');
+  view.addEventListener('click', async function(e){
+    const el = e.target.closest('[data-act]');
+    if(!el || el.tagName === 'INPUT') return;
+    const fn = ACT[el.dataset.act];
+    if(!fn) return;
+    try{ await fn(el, e); }catch(err){ busyHide(); toast('ত্রুটি: ' + (err && err.message ? err.message : err), 'bad'); }
+  });
+  view.addEventListener('change', async function(e){
+    const t = e.target;
+    if(t.tagName === 'INPUT' && t.dataset.act && ACT[t.dataset.act]){ try{ await ACT[t.dataset.act](t, e); }catch(err){ toast('ত্রুটি', 'bad'); } return; }
+    if(t.dataset && t.dataset.set){
+      const k = t.dataset.set;
+      S.settings[k] = t.type === 'checkbox' ? t.checked : parseInt(t.value, 10);
+      await saveMeta();
+      return;
+    }
+    if(t.id === 'af' || t.id === 'as' || t.id === 'ac'){
+      S[t.id] = t.value;
+      const a = S.analyses.find(function(x){ return x.id === S.openA; });
+      if(a) $('#alist').innerHTML = entriesHtml(a);
+    }
+  });
+  view.addEventListener('input', function(e){
+    const t = e.target;
+    if(t.id === 'qInput'){ S.input = t.value; const c = $('#qCount'); if(c) c.textContent = qCountText(); }
+    else if(t.id === 'aq'){ S.aq = t.value; S.aLimit = 80; const a = S.analyses.find(function(x){ return x.id === S.openA; }); if(a) $('#alist').innerHTML = entriesHtml(a); }
+  });
+  $('#fileTxt').addEventListener('change', async function(e){
+    const files = Array.from(e.target.files || []);
+    e.target.value = '';
+    if(files.length) await importFiles(files);
+  });
+  $('#fileBackup').addEventListener('change', async function(e){
+    const f = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if(f) await restoreBackup(f);
+  });
+  init();
+});
+
+async function init(){
+  try{
+    DB = await dbOpen();
+    S.dbOk = true;
+    const r = await Promise.all([dbAll('books'), dbAll('analyses'), dbAll('qs'), dbAll('meta')]);
+    S.books = r[0]; S.analyses = r[1]; S.qs = r[2];
+    r[3].forEach(function(m){
+      if(m.k === 'settings') S.settings = Object.assign({}, DEFAULTS, m.v);
+      else if(m.k === 'seq') S.seq = m.v;
+      else if(m.k === 'batch') S.batch = m.v;
+    });
+    S.seq = Math.max(S.seq, S.qs.reduce(function(n, q){ return Math.max(n, q.seq || 0); }, 0));
+    S.batch = Math.max(S.batch, S.qs.reduce(function(n, q){ return Math.max(n, q.batch || 0); }, 0));
+    setChip('ok', 'সংরক্ষিত ');
+    if(navigator.storage && navigator.storage.persist){ try{ S.persisted = await navigator.storage.persist(); }catch(e){ S.persisted = null; } }
+  }catch(e){
+    S.dbOk = false;
+    setChip('bad', 'সংরক্ষণ বন্ধ');
+    toast('ডেটাবেস চালু হয়নি — ডেটা স্থায়ী হবে না: ' + (e && e.message ? e.message : e), 'bad');
+  }
+  render(false);
+}
+</script>
+</body>
+</html>
