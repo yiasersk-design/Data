@@ -33,15 +33,12 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;padding:10px 10px calc(env(safe-ar
 .card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:10px 12px;margin-bottom:8px;border:1px solid var(--bd)}
 .hero{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
 .mut{color:var(--mut)}.small{font-size:12px}
-.btn{border:1px solid var(--bd);background:var(--card);color:var(--tx);font:inherit;font-size:13px;padding:7px 13px;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;box-shadow:0 3px 0 var(--bd), 0 4px 8px rgba(0,0,0,.06);transition:transform .12s cubic-bezier(.34,1.56,.64,1),box-shadow .12s ease,background .2s;position:relative}
-.btn:active{transform:translateY(3px);box-shadow:0 0 0 var(--bd), 0 1px 3px rgba(0,0,0,.04)}
-.btn.pri{background:linear-gradient(180deg,#6366f1,var(--pri));color:#fff;border:none;box-shadow:0 3.5px 0 #3730a3, 0 5px 12px rgba(79,70,229,.35)}
-.btn.pri:active{transform:translateY(3px);box-shadow:0 0.5px 0 #3730a3, 0 2px 4px rgba(79,70,229,.3)}
-.btn.dng{background:linear-gradient(180deg,#ef4444,var(--bad));color:#fff;border:none;box-shadow:0 3.5px 0 #991b1b, 0 5px 12px rgba(220,38,38,.35)}
-.btn.dng:active{transform:translateY(3px);box-shadow:0 0.5px 0 #991b1b, 0 2px 4px rgba(220,38,38,.3)}
-.btn.sm{font-size:12px;padding:4px 9px;border-radius:6px;gap:4px;box-shadow:0 2px 0 var(--bd), 0 2px 4px rgba(0,0,0,.04)}
-.btn.sm:active{transform:translateY(2px);box-shadow:0 0 0 var(--bd)}
-.btn[disabled]{opacity:.5;pointer-events:none;box-shadow:none;transform:none}
+.btn{border:1px solid var(--bd);background:var(--card);color:var(--tx);font:inherit;font-size:13px;padding:6px 12px;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:transform .2s cubic-bezier(.34,1.56,.64,1),background .2s}
+.btn:active{transform:scale(.95)}
+.btn.pri{background:linear-gradient(135deg,var(--pri),var(--pri2));color:#fff;border-color:transparent}
+.btn.dng{color:var(--bad);border-color:var(--bad)}
+.btn.sm{font-size:12px;padding:4px 8px;border-radius:4px;gap:4px}
+.btn[disabled]{opacity:.5;pointer-events:none}
 .btnrow{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .lbl{display:block;font-weight:600;font-size:13px;margin:6px 0 3px}
 .inp{width:100%;font:inherit;font-size:14px;padding:7px 10px;border-radius:6px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);outline:none}
@@ -74,11 +71,9 @@ textarea.big{min-height:150px}
 .badge.low{background:rgba(107,112,134,.12);color:var(--mut);border:1px solid rgba(107,112,134,.25);font-weight:600}
 
 
-.filters{display:flex;gap:7px;overflow-x:auto;padding:2px 2px 8px;margin-bottom:6px}
-.fch{border:1px solid var(--bd);background:var(--card);color:var(--tx);font:inherit;font-size:12px;padding:5px 12px;border-radius:999px;white-space:nowrap;cursor:pointer;box-shadow:0 2.5px 0 var(--bd), 0 2px 5px rgba(0,0,0,.04);transition:transform .12s ease,box-shadow .12s ease}
-.fch:active{transform:translateY(2px);box-shadow:0 0.5px 0 var(--bd)}
-.fch.on{background:linear-gradient(180deg,#6366f1,var(--pri));color:#fff;border-color:transparent;box-shadow:0 3px 0 #3730a3, 0 4px 10px rgba(79,70,229,.3)}
-.fch.on:active{transform:translateY(2px);box-shadow:0 1px 0 #3730a3}
+.filters{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:6px}
+.fch{border:1px solid var(--bd);background:var(--card);color:var(--tx);font:inherit;font-size:12px;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.fch.on{background:var(--pri);color:#fff;border-color:var(--pri)}
 .qhead{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:4px}
 .qno{font-weight:700;color:var(--pri)}
 .qtxt{white-space:pre-wrap;word-break:break-word}
@@ -99,11 +94,10 @@ details{margin-top:6px}summary{cursor:pointer;color:var(--pri);font-size:13px}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .fld{margin:4px 0;word-break:break-word}.fld b{color:var(--mut);font-weight:600;font-size:12px;display:block}
 .ent{border-left:3px solid var(--pri)}
-.toggle{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 12px;margin:6px 0;background:var(--bg);border:1px solid var(--bd);border-radius:8px;box-shadow:0 2.5px 0 var(--bd), 0 2px 5px rgba(0,0,0,.03)}
-.toggle:last-child{border-bottom:1px solid var(--bd)}
-.toggle select{font:inherit;padding:6px 10px;border-radius:7px;border:1px solid var(--bd);background:var(--card);color:var(--tx);box-shadow:0 2px 0 var(--bd);cursor:pointer;outline:none}
-.toggle select:active{transform:translateY(1px);box-shadow:0 1px 0 var(--bd)}
-.toggle input[type=checkbox]{width:22px;height:22px;accent-color:var(--pri);cursor:pointer;filter:drop-shadow(0 2px 0 rgba(0,0,0,.15))}
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px dashed var(--bd)}
+.toggle:last-child{border-bottom:0}
+.toggle select{font:inherit;padding:5px 8px;border-radius:6px;border:1px solid var(--bd);background:var(--bg);color:var(--tx)}
+.toggle input[type=checkbox]{width:20px;height:20px;accent-color:var(--pri)}
 .empty{text-align:center;padding:22px 10px;color:var(--mut);display:flex;flex-direction:column;align-items:center;gap:6px}
 .mback{position:fixed;inset:0;background:rgba(10,12,30,.55);display:flex;align-items:flex-end;justify-content:center;z-index:50;animation:fi .2s}
 .modal{background:var(--card);width:100%;max-width:480px;max-height:85vh;border-radius:16px 16px 0 0;display:flex;flex-direction:column;animation:su .28s cubic-bezier(.34,1.2,.64,1);box-shadow:0 -10px 30px rgba(0,0,0,.2)}
@@ -593,21 +587,16 @@ const DEFAULTS = {autoSave: true, autoThr: 90, reviewThr: 55, ctxN: 2, splitCh: 
 const S = {books: [], analyses: [], qs: [], settings: Object.assign({}, DEFAULTS), seq: 0, batch: 0,
   view: 'lib', openA: null, rf: 'batch', rLimit: 60, allowDup: true, input: '', prepCache: new Map(),
   aq: '', af: 'all', as: 'seq', ac: 'all', aLimit: 80, dirtyA: new Set(), delA: new Set(), dbOk: false, persisted: null,
-  groupDups: false};
-
+  starDup: false};
 
 
 const TYPE_LABEL = {exact: 'Exact Match', normalized: 'Normalized Match', partial: 'Partial Match', fuzzy: 'Fuzzy Match'};
 const STATUS_LABEL = {saved: 'সংরক্ষিত', review: 'যাচাই দরকার', ambiguous: 'একাধিক সম্ভাব্য মিল — বেছে নিন', unmatched: 'Unmatched', duplicate: 'ডুপ্লিকেট'};
 
-function getRepeatInfo(raw, entries){
-  const k = norm(raw);
-  if(!k || !entries) return { count: 1, stars: '' };
-  const count = entries.filter(function(x){ return norm(x.e ? x.e.raw : x.raw) === k; }).length;
-  const stars = count > 1 ? '⭐'.repeat(count - 1) : '';
-  return { count: count, stars: stars };
+function getExtraDupStars(count){
+  const extraCopies = Math.max(0, count - 1);
+  return extraCopies > 0 ? '⭐'.repeat(extraCopies) : '';
 }
-
 
 
 
@@ -1082,10 +1071,12 @@ async function runBatch(text){
   S.batch++;
   const batch = S.batch;
   const newRecs = [];
+  const delIds = [];
   for(let i = 0; i < list.length; i++){
     busyShow('ম্যাচিং চলছে… ' + bn(i + 1) + ' / ' + bn(list.length)); await tick();
     const raw = list[i];
     const key = norm(raw);
+
     const rec = newRec(raw, key, batch);
     fillMatch(rec, items);
     newRecs.push(rec);
@@ -1094,12 +1085,12 @@ async function runBatch(text){
   S.qs = S.qs.concat(newRecs);
   busyShow('সংরক্ষণ হচ্ছে…'); await tick();
   await save('qs', newRecs);
+  if(delIds.length) await removeFromDb('qs', delIds);
   await flushA();
   await saveMeta();
   busyHide();
   return true;
 }
-
 async function rematch(rec, custom, asRepeat){
   busyShow('ম্যাচিং চলছে…'); await tick();
   const items = buildItems();
@@ -1148,7 +1139,6 @@ function vMatch(){
     '<div class="btnrow"><button class="btn pri" data-act="runMatch" ' + (nb ? '' : 'disabled') + '>' + svgIcon('match', 14) + 'ম্যাচ করুন</button><button class="btn" data-act="clearInput">পরিষ্কার</button></div></div>' +
     '<div class="card mut small">কোটেশন ("…", “…”, ‘…’) এর ভিতরের লাইনটিই অনুসন্ধান হয়। কোটেশন না থাকলে প্রশ্ন থেকে প্রাসঙ্গিক বাংলা অংশ বেছে নেওয়া হয়। যে মিলের পক্ষে যথেষ্ট প্রমাণ নেই তা নিশ্চিত হিসেবে দেখানো হয় না — ‘যাচাই দরকার’ বা ‘Unmatched’-এ থাকে।</div>';
 }
-
 function candHtml(rec, c, ci, sel, saved){
   const btn = sel ? '<div class="selb">✓ অ্যানালাইসিসে সংরক্ষিত</div>' : '<button class="btn sm pri" data-act="pick" data-id="' + rec.id + '" data-ci="' + ci + '">' + (saved ? 'এটিও যোগ করুন' : 'এটি সংরক্ষণ করুন') + '</button>';
   return '<div class="cand ' + (sel ? 'sel' : '') + '"><div class="chead">' + esc(c.bname) + '<span class="sep">›</span>' + esc(c.chap) + '</div>' +
@@ -1279,14 +1269,13 @@ function vAnalysisOpen(a){
   const chaps = Array.from(new Set(a.entries.map(function(e){ return e.chapter; })));
   const sel = function(v, c, l){ return '<option value="' + esc(v) + '" ' + (v === c ? 'selected' : '') + '>' + esc(l) + '</option>'; };
   return '<div class="card"><button class="btn sm" data-act="backA">← সব ফাইল</button><div style="margin-top:6px"><b>' + esc(a.name) + '</b></div><div class="mut small">' + bn(a.entries.length) + ' টি প্রশ্ন · হালনাগাদ ' + fmtDate(a.updatedAt) + '</div>' +
-    '<div class="btnrow"><button class="btn sm pri" data-act="expA" data-id="' + a.id + '">TXT Export</button><button class="btn sm" data-act="copyA" data-id="' + a.id + '">সম্পূর্ণ কপি</button><button class="btn sm" data-act="viewA" data-id="' + a.id + '">টেক্সট দেখুন</button><button class="btn sm ' + (S.groupDups ? 'pri' : '') + '" data-act="togGroupDups">' + (S.groupDups ? '⭐ পুনরাবৃত্ত চিহ্নিত (চালু)' : '⭐ পুনরাবৃত্ত প্রশ্ন চিহ্নিত করুন') + '</button><button class="btn sm dng" data-act="delA" data-id="' + a.id + '">ফাইল মুছুন</button></div></div>' +
+    '<div class="btnrow"><button class="btn sm pri" data-act="expA" data-id="' + a.id + '">TXT Export</button><button class="btn sm" data-act="copyA" data-id="' + a.id + '">কপি</button><button class="btn sm" data-act="viewA" data-id="' + a.id + '">টেক্সট দেখুন</button><button class="btn sm ' + (S.starDup ? 'pri' : '') + '" data-act="togStarDup">' + (S.starDup ? '⭐ পুনরাবৃত্ত প্রশ্ন চিহ্নিত (চালু)' : '⭐ পুনরাবৃত্ত প্রশ্ন চিহ্নিত করুন') + '</button><button class="btn sm dng" data-act="delA" data-id="' + a.id + '">ফাইল মুছুন</button></div></div>' +
     '<div class="card"><input class="inp" id="aq" placeholder="প্রশ্ন / লাইন / অধ্যায় খুঁজুন" value="' + esc(S.aq) + '">' +
     '<div class="row2" style="margin-top:6px"><select class="inp" id="af">' + sel('all', S.af, 'সব ধরন') + sel('exact', S.af, 'Exact') + sel('normalized', S.af, 'Normalized') + sel('partial', S.af, 'Partial') + sel('fuzzy', S.af, 'Fuzzy') + '</select>' +
     '<select class="inp" id="as">' + sel('seq', S.as, 'ইনপুট ক্রম') + sel('seqd', S.as, 'উল্টো ক্রম') + sel('score', S.as, 'Confidence (বেশি→কম)') + sel('chap', S.as, 'অধ্যায় অনুযায়ী') + '</select></div>' +
     (chaps.length > 1 ? '<select class="inp" id="ac" style="margin-top:6px">' + sel('all', S.ac, 'সব অধ্যায়') + chaps.map(function(c){ return sel(c, S.ac, c); }).join('') + '</select>' : '') + '</div>' +
     '<div id="alist">' + entriesHtml(a) + '</div>';
 }
-
 
 function entriesHtml(a){
   let arr = sortedEntries(a);
@@ -1295,55 +1284,62 @@ function entriesHtml(a){
   if(S.as === 'seqd') arr.reverse();
   if(!arr.length) return '<div class="empty">কিছু পাওয়া যায়নি।</div>';
 
-  let displayList = [];
-  if(S.groupDups){
+  let displayItems = [];
+
+  if(S.starDup){
     const counts = new Map();
     arr.forEach(function(x){
       const k = norm(x.e.raw);
       counts.set(k, (counts.get(k) || 0) + 1);
     });
+
     const seen = new Set();
     arr.forEach(function(x){
       const k = norm(x.e.raw);
       if(!seen.has(k)){
         seen.add(k);
-        const total = counts.get(k) || 1;
-        displayList.push({ e: x.e, stars: total > 1 ? '⭐'.repeat(total - 1) : '' });
+        displayItems.push({
+          raw: x.e.raw,
+          stars: getExtraDupStars(counts.get(k) || 1)
+        });
       }
     });
   } else {
-    displayList = arr.map(function(x){ return { e: x.e, stars: '' }; });
+    displayItems = arr.map(function(x){
+      return { raw: x.e.raw, stars: '' };
+    });
   }
 
-  let h = displayList.slice(0, S.aLimit).map(function(item, idx){
-    const starBadge = item.stars ? '<span style="margin-left:6px;letter-spacing:1px" title="পুনরাবৃত্ত কপি">' + item.stars + '</span>' : '';
-    return '<div class="card" style="padding:6px 10px;margin-bottom:4px;line-height:1.4"><span class="qno" style="font-weight:700;margin-right:6px">' + bn(idx + 1) + '.</span>' + esc(item.e.raw) + starBadge + '</div>';
+  let h = '';
+  h += displayItems.slice(0, S.aLimit).map(function(item, idx){
+    const starBadge = item.stars ? '<span style="margin-left:6px;font-size:12px;vertical-align:middle">' + item.stars + '</span>' : '';
+    return '<div class="card" style="padding:6px 10px;margin-bottom:4px;line-height:1.4"><span class="qno" style="font-weight:700;margin-right:6px">' + bn(idx + 1) + '.</span>' + esc(item.raw) + starBadge + '</div>';
   }).join('');
 
-  if(displayList.length > S.aLimit) h += '<div class="btnrow"><button class="btn" data-act="moreA">আরও দেখান</button></div>';
+  if(displayItems.length > S.aLimit) h += '<div class="btnrow"><button class="btn" data-act="moreA">আরও দেখান</button></div>';
   return h;
 }
-
 
 
 function analysisText(a){
   const es = sortedEntries(a);
   let t = '';
-  if(S.groupDups){
+
+  if(S.starDup){
     const counts = new Map();
     es.forEach(function(x){
       const k = norm(x.e.raw);
       counts.set(k, (counts.get(k) || 0) + 1);
     });
+
     const seen = new Set();
     let idx = 1;
     es.forEach(function(x){
       const k = norm(x.e.raw);
       if(!seen.has(k)){
         seen.add(k);
-        const total = counts.get(k) || 1;
-        const star = total > 1 ? ' ' + '⭐'.repeat(total - 1) : '';
-        t += bn(idx) + '. ' + x.e.raw + star + '\n';
+        const stars = getExtraDupStars(counts.get(k) || 1);
+        t += bn(idx) + '. ' + x.e.raw + (stars ? ' ' + stars : '') + '\n';
         idx++;
       }
     });
@@ -1352,9 +1348,9 @@ function analysisText(a){
       t += bn(idx + 1) + '. ' + x.e.raw + '\n';
     });
   }
+
   return t.trim();
 }
-
 
 
 function opt(v, cur, l){ return '<option value="' + v + '" ' + (String(v) === String(cur) ? 'selected' : '') + '>' + l + '</option>'; }
@@ -1462,14 +1458,11 @@ const ACT = {
   expA: function(el){ const a = S.analyses.find(function(x){ return x.id === el.dataset.id; }); saveTextFile(safeName(a.name) + '.txt', analysisText(a), 'text/plain'); },
   copyA: async function(el){ const a = S.analyses.find(function(x){ return x.id === el.dataset.id; }); const ok = await copyText(analysisText(a)); if(ok) toast('সম্পূর্ণ অ্যানালাইসিস কপি হয়েছে', 'ok'); else showTextModal(a.name, analysisText(a)); },
     viewA: function(el){ const a = S.analyses.find(function(x){ return x.id === el.dataset.id; }); showTextModal(a.name, analysisText(a)); },
-    togGroupDups: function(){
-    S.groupDups = !S.groupDups;
-    const a = S.analyses.find(function(x){ return x.id === S.openA; });
-    if(a) $('#alist').innerHTML = entriesHtml(a);
+  togStarDup: function(){
+    S.starDup = !S.starDup;
     render(true);
-    toast(S.groupDups ? '⭐ পুনরাবৃত্ত কপি লুকানো ও স্টার প্রদর্শন সক্রিয়' : 'সব প্রশ্ন সম্পূর্ণ প্রদর্শন সক্রিয়', 'ok');
+    toast(S.starDup ? 'পুনরাবৃত্ত প্রশ্ন চিহ্নিত ও স্টার (⭐) প্রদর্শন চালু হয়েছে' : 'সব প্রশ্ন সম্পূর্ণভাবে প্রদর্শিত হচ্ছে', 'ok');
   },
-
   delA: async function(el){
 
     const a = S.analyses.find(function(x){ return x.id === el.dataset.id; });
