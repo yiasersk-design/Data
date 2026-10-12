@@ -1368,8 +1368,9 @@ function vSettings(){
     '<div class="card"><b>সংরক্ষণের অবস্থা</b><div class="mut small">ডেটাবেস: ' + (S.dbOk ? 'চালু ✓ (IndexedDB)' : '<span style="color:var(--bad)">বন্ধ — ডেটা স্থায়ী হবে না, ব্যাকআপ নিন</span>') +
     '<br>স্থায়ী স্টোরেজ: ' + (S.persisted === true ? 'নিশ্চিত ✓' : S.persisted === false ? 'নিশ্চিত নয়' : 'অজানা') +
     '<br>বই ' + bn(S.books.length) + ' · অ্যানালাইসিস ফাইল ' + bn(S.analyses.length) + ' · প্রশ্ন ' + bn(S.qs.length) + '</div></div>' +
-    '<div class="card"><b>বিপজ্জনক অংশ</b><div class="btnrow"><button class="btn dng" data-act="wipe">সব ডেটা মুছুন</button></div></div>';
+    '<div class="card"><b>বিপজ্জনক অংশ</b><div class="mut small">অ্যানালাইসিস ও প্রশ্নের সব ডেটা মুছে যাবে (লাইব্রেরির TXT ফাইলগুলো অক্ষত থাকবে)।</div><div class="btnrow"><button class="btn dng" data-act="wipe">সব ডেটা মুছুন</button></div></div>';
 }
+
 
 /* ---------- রেন্ডার ---------- */
 function render(keep){
@@ -1513,15 +1514,16 @@ const ACT = {
     saveTextFile('QMatcher_Backup_' + stamp + '.json', JSON.stringify(obj), 'application/json', false);
   },
   bkImport: function(){ $('#fileBackup').click(); },
-  wipe: async function(){
-    if(!await askConfirm('সব বই, অ্যানালাইসিস ফাইল ও প্রশ্ন মুছে যাবে। আগে ব্যাকআপ নিয়েছেন?', 'এগিয়ে যান', true)) return;
-    if(!await askConfirm('সত্যিই সব মুছবেন? এটি ফেরানো যাবে না।', 'হ্যাঁ, সব মুছুন', true)) return;
-    try{ for(const st of ['books', 'analyses', 'qs']) await dbClear(st); }catch(e){ toast('মুছতে ব্যর্থ', 'bad'); return; }
-    S.books = []; S.analyses = []; S.qs = []; S.prepCache.clear(); S.openA = null;
+    wipe: async function(){
+    if(!await askConfirm('সব অ্যানালাইসিস ফাইল ও প্রশ্ন মুছে যাবে (তবে আপলোড করা TXT বইগুলো অক্ষত থাকবে)। আগে ব্যাকআপ নিয়েছেন?', 'এগিয়ে যান', true)) return;
+    if(!await askConfirm('সত্যিই সব অ্যানালাইসিস ও প্রশ্ন মুছবেন? এটি ফেরানো যাবে না।', 'হ্যাঁ, মুছুন', true)) return;
+    try{ for(const st of ['analyses', 'qs']) await dbClear(st); }catch(e){ toast('মুছতে ব্যর্থ', 'bad'); return; }
+    S.analyses = []; S.qs = []; S.dirtyA.clear(); S.delA.clear(); S.openA = null;
     setChip('ok', 'সংরক্ষিত  ' + nowStr());
-    toast('সব ডেটা মুছে গেছে', 'ok');
+    toast('অ্যানালাইসিস ও প্রশ্ন মুছে গেছে (TXT ফাইল অক্ষত আছে)', 'ok');
     render(false);
   }
+
 };
 
 async function restoreBackup(file){
